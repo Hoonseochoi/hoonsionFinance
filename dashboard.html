@@ -198,6 +198,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 .conf-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
 .conf-btn.primary:hover{background:var(--navy2);}
 
+/* ── TX ACTIONS ── */
+.tx-actions{display:flex;gap:3px;flex-shrink:0;}
+.tx-act-btn{width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .12s,background .12s;}
+.tx-act-btn:hover{opacity:1;}
+.tx-act-btn.edit{background:var(--bg);color:var(--navy2);}
+.tx-act-btn.edit:hover{background:#EEF2FF;color:var(--blue);}
+.tx-act-btn.del{background:var(--bg);color:var(--muted);}
+.tx-act-btn.del:hover{background:#FFF0EE;color:var(--coral);}
+
 /* scrollbar */
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
@@ -214,7 +223,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
     <button class="nav-tab" onclick="switchPage(1)">💡 인사이트</button>
     <button class="nav-tab" onclick="switchPage(2)">📈 자산 그래프</button>
   </div>
-  <div class="nav-right">2026년 03월 21일 기준</div>
+  <div class="nav-right">
+    <select id="month-select" onchange="onMonthChange()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;cursor:pointer;outline:none;">
+    </select>
+  </div>
 </div>
 
 <!-- PAGES -->
@@ -277,7 +289,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
       <div class="ch"><span class="ct">대출 현황</span><span class="cs">잔액</span></div>
       <div id="loan-list"></div>
       <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--border);">
-        <div class="ch" style="margin-bottom:7px;"><span class="ct" style="font-size:12px;">이번 달 Top 지출</span></div>
+        <div class="ch" style="margin-bottom:7px;"><span class="ct" style="font-size:12px;" data-top-label>이번 달 Top 지출</span></div>
         <div id="this-top"></div>
       </div>
     </div>
@@ -286,74 +298,30 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 
 <!-- ════════ PAGE 1: INSIGHTS ════════ -->
 <div class="page" id="page-1">
-  <div class="ins-hero">
+  <div class="ins-hero" id="ins-hero">
     <div class="ih-l">
       <div class="ih-title">가계 인사이트 리포트</div>
-      <div class="ih-sub">1년 거래 데이터 기반 · 2025.03 – 2026.03</div>
+      <div class="ih-sub" id="ins-period"></div>
     </div>
     <div class="ih-stats">
-      <div><div class="ih-sl">합산 순자산</div><div class="ih-sv" id="ih-net"></div><div class="ih-ss ipos">훈 6,793만 · 시 9,200만</div></div>
-      <div><div class="ih-sl">연 지출 합산</div><div class="ih-sv" id="ih-exp"></div><div class="ih-ss ineg">월평균 <span id="ih-avg"></span>만원</div></div>
-      <div><div class="ih-sl">저축·투자 이체</div><div class="ih-sv">5,921만원</div><div class="ih-ss ipos">연간 기준</div></div>
+      <div><div class="ih-sl">이달 수입</div><div class="ih-sv" id="ih-income"></div><div class="ih-ss" id="ih-income-sub"></div></div>
+      <div><div class="ih-sl">이달 지출</div><div class="ih-sv" id="ih-exp"></div><div class="ih-ss" id="ih-exp-sub"></div></div>
+      <div><div class="ih-sl">저축률</div><div class="ih-sv" id="ih-save-rate"></div><div class="ih-ss" id="ih-save-sub"></div></div>
     </div>
   </div>
-
-  <div class="g2e">
-    <div>
-      <div class="alert red" onclick="openModal('cat_온라인쇼핑','온라인쇼핑 상세')">
-        <div class="al-t">🛍 온라인쇼핑 연간 1위</div><div class="al-a">2,977만원</div>
-        <div class="al-b">월평균 <strong>248만원</strong>. 업비트 입금 1,300만 포함 — 코인 투자로 분류 수정 가능.</div>
-      </div>
-      <div class="alert yellow" onclick="openModal('unknown_medical','미확인 정기출금')">
-        <div class="al-t">⚠️ 미확인 정기출금 (코드 번호)</div><div class="al-a">770만원</div>
-        <div class="al-b">매월 <strong>70~83만원</strong> 고정 출금. 실손보험 청구 여부 확인 필요.</div>
-      </div>
-    </div>
-    <div>
-      <div class="alert green" onclick="openModal('cat_패션/쇼핑','패션·쇼핑 상세')">
-        <div class="al-t">✂️ 절감 가능 — 패션/쇼핑</div><div class="al-a">1,875만원</div>
-        <div class="al-b">합산 연간. 월 예산 <strong>80만원</strong> 설정 시 연 900만 절감 가능.</div>
-      </div>
-      <div class="alert blue" onclick="openModal('bonus_plan','성과급 활용 플랜')">
-        <div class="al-t">💡 성과급 5,139만원 활용</div><div class="al-a">5,139만원</div>
-        <div class="al-b">비상금 1,200만 + ETF 2,000만 + 청약 500만 배분 추천.</div>
-      </div>
-    </div>
-  </div>
-
+  <div class="g2e" id="ins-alerts"></div>
   <div class="g2e">
     <div class="card">
-      <div class="ch"><span class="ct">훈서 vs 시온 지출 비교</span></div>
-      <div style="display:flex;gap:10px;margin-bottom:14px;">
-        <div style="flex:1;background:#EEF2FF;border-radius:9px;padding:11px;text-align:center;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">훈서</div>
-          <div style="font-size:19px;font-weight:800;color:var(--navy);">1.37억</div>
-        </div>
-        <div style="flex:1;background:#FFF0EE;border-radius:9px;padding:11px;text-align:center;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">시온</div>
-          <div style="font-size:19px;font-weight:800;color:var(--coral);">1,963만원</div>
-        </div>
-      </div>
+      <div class="ch"><span class="ct">훈서 vs 시온 이달 지출</span></div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;" id="ins-hw-summary"></div>
       <div id="ins-cat-bars"></div>
     </div>
     <div class="card">
-      <div class="ch"><span class="ct">자동차 · 여행 하이라이트</span></div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em;">자동차 — 연 1,122만원</div>
-      <div class="hbar" onclick="openModal('subcat_자동차_정비','자동차 정비')"><div class="hbn">Tesla 정비</div><div class="hbt"><div class="hbf" style="width:100%;background:var(--coral);"></div></div><div class="hba">545만</div></div>
-      <div class="hbar"><div class="hbn">전기차 충전</div><div class="hbt"><div class="hbf" style="width:25%;background:var(--teal);"></div></div><div class="hba">136만</div></div>
-      <div class="hbar"><div class="hbn">클래식 커스텀</div><div class="hbt"><div class="hbf" style="width:20%;background:var(--purple);"></div></div><div class="hba">110만</div></div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin:12px 0 7px;text-transform:uppercase;letter-spacing:.05em;">여행 — 연 1,282만원</div>
-      <div class="hbar" onclick="openModal('cat_여행/숙박','여행·숙박 상세')"><div class="hbn">아고다 3회</div><div class="hbt"><div class="hbf" style="width:100%;background:var(--blue);"></div></div><div class="hba">409만</div></div>
-      <div class="hbar"><div class="hbn">더헤븐 리조트</div><div class="hbt"><div class="hbf" style="width:62%;background:var(--blue);"></div></div><div class="hba">251만</div></div>
-      <div class="hbar"><div class="hbn">Wynn LV</div><div class="hbt"><div class="hbf" style="width:20%;background:var(--amber);"></div></div><div class="hba">83만</div></div>
+      <div class="ch"><span class="ct" id="ins-trend-title">전월 대비 카테고리</span></div>
+      <div id="ins-trend-bars"></div>
     </div>
   </div>
-
-  <div class="g3">
-    <div class="fun-card"><div class="fc-lbl">훈서의 AI 구독 🤖</div><div class="fc-val">Claude 구독 중!</div><div class="fc-desc">Anthropic PBC 40만원. 지금 이 분석도 그 구독 덕분 😄</div></div>
-    <div class="fun-card"><div class="fc-lbl">라스베가스 🎰</div><div class="fc-val">Wynn + Bellagio 투숙</div><div class="fc-desc">최고급 2곳 확인. 연간 해외여행 총 1,282만원.</div></div>
-    <div class="fun-card"><div class="fc-lbl">시온 신용점수 🏆</div><div class="fc-val">KCB 1000점 만점!</div><div class="fc-desc">대출 없이 달성. 훈서 974점. 부부 합산 1,974점.</div></div>
-  </div>
+  <div class="g3" id="ins-fun-cards"></div>
 </div><!-- /page-1 -->
 
 <!-- ════════ PAGE 2: ASSET GRAPH ════════ -->
@@ -513,6 +481,8 @@ function switchPage(idx) {
 // ═══════════════════════
 //  INIT
 // ═══════════════════════
+let _selectedMonth = '';
+
 async function loadData() {
   try {
     RAW = await fetch('/api/data').then(r => {
@@ -530,7 +500,19 @@ async function loadData() {
   }
   CATS = RAW.all_cats;
   OVERRIDES = RAW.overrides || {};
+  // 월 드롭다운 초기화
+  const months = RAW.monthly.map(m => m.month);
+  _selectedMonth = months[months.length - 1];
+  const sel = document.getElementById('month-select');
+  sel.innerHTML = months.slice().reverse().map(m =>
+    `<option value="${m}" ${m===_selectedMonth?'selected':''}>${m.replace('20','').replace('-','/')}월</option>`
+  ).join('');
   initDashboard();
+  initInsights();
+}
+function onMonthChange() {
+  _selectedMonth = document.getElementById('month-select').value;
+  renderDashboardTopSection();
   initInsights();
 }
 window.addEventListener('DOMContentLoaded', loadData);
@@ -611,29 +593,136 @@ function initDashboard() {
       <div class="lr">금리 ${l.rate}%</div>
     </div>`).join('');
 
-  // This month top
-  const thisM=RAW.monthly[RAW.monthly.length-1].month;
-  const thisExp=visibleTx().filter(t=>t.month===thisM&&t.type==='지출').sort((a,b)=>a.amount-b.amount).slice(0,6);
-  document.getElementById('this-top').innerHTML=thisExp.map(t=>`
+  renderDashboardTopSection();
+}
+
+function renderDashboardTopSection() {
+  const thisExp=visibleTx().filter(t=>t.month===_selectedMonth&&t.type==='지출').sort((a,b)=>a.amount-b.amount).slice(0,6);
+  const topLabel = document.querySelector('#page-0 .ct[data-top-label]');
+  if (topLabel) topLabel.textContent = _selectedMonth.replace('20','').replace('-','/') + '월 Top 지출';
+  document.getElementById('this-top').innerHTML = thisExp.length ? thisExp.map(t=>`
     <div style="display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="openModal('cat_${encodeURIComponent(t.cat)}','${t.cat}')">
       <span class="ptag ${t.person}">${t.person==='h'?'훈':'시'}</span>
       <span style="font-size:10px;padding:1px 6px;border-radius:8px;background:var(--bg);color:var(--muted);">${t.cat}</span>
       <span style="font-size:11px;color:var(--navy);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.desc}</span>
       <span style="font-size:11px;font-weight:700;color:var(--coral);flex-shrink:0;">${fmt(Math.abs(t.amount))}</span>
-    </div>`).join('');
+    </div>`).join('')
+  : '<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px;">해당 월 지출 내역 없음</div>';
 }
 
+// 고정비/이체성 카테고리 — 인사이트 분석에서 제외
+const FIXED_CATS = new Set(['금융','이체','보험','의료/건강']);
+
 function initInsights() {
-  const C=RAW.combined;
-  document.getElementById('ih-net').textContent=fmt(C.net_assets)+'원';
-  const tExp=RAW.monthly.reduce((a,m)=>a+m.total_expense,0);
-  document.getElementById('ih-exp').textContent=fmt(tExp)+'원';
-  document.getElementById('ih-avg').textContent=Math.round(tExp/RAW.monthly.length/10000).toLocaleString();
-  // ins cat bars
-  const topC=Object.entries(RAW.cat_summary).sort((a,b)=>b[1].total-a[1].total).slice(0,8);
-  const maxC2=topC[0][1].total;
-  document.getElementById('ins-cat-bars').innerHTML=topC.map(([cat,v])=>{
-    const hp=v.total>0?Math.round(v.h/v.total*100):0;
+  const m = _selectedMonth;
+  const mIdx = RAW.monthly.findIndex(x => x.month === m);
+  const mData = RAW.monthly[mIdx] || {total_income:0, total_expense:0};
+  const prevData = mIdx > 0 ? RAW.monthly[mIdx-1] : null;
+
+  // 해당 월 트랜잭션 (이체 제외)
+  const mTxs = visibleTx().filter(t => t.month === m && t.type !== '이체');
+  const mExp = mTxs.filter(t => t.type === '지출');
+  const mInc = mTxs.filter(t => t.type === '수입');
+
+  // 히어로 업데이트
+  document.getElementById('ins-period').textContent = m.replace('20','').replace('-','/') + '월 거래 데이터 기반';
+  const income = mData.total_income;
+  const expense = Math.abs(mData.total_expense);
+  const net = income - expense;
+  const saveRate = income > 0 ? Math.round(net / income * 100) : 0;
+
+  document.getElementById('ih-income').textContent = fmt(income) + '원';
+  document.getElementById('ih-income-sub').innerHTML = income >= 0
+    ? `<span class="ipos">+${fmt(income)}원</span>`
+    : '<span class="ineg">수입 없음</span>';
+  document.getElementById('ih-exp').textContent = fmt(expense) + '원';
+  const prevExp = prevData ? Math.abs(prevData.total_expense) : 0;
+  const expDiff = prevData ? expense - prevExp : 0;
+  document.getElementById('ih-exp-sub').innerHTML = prevData
+    ? `<span class="${expDiff<=0?'ipos':'ineg'}">${expDiff<=0?'▼':'▲'}${fmt(Math.abs(expDiff))} 전월대비</span>`
+    : '';
+  document.getElementById('ih-save-rate').textContent = saveRate + '%';
+  document.getElementById('ih-save-sub').innerHTML = net >= 0
+    ? `<span class="ipos">잉여 ${fmt(net)}원</span>`
+    : `<span class="ineg">적자 ${fmt(Math.abs(net))}원</span>`;
+
+  // 이달 카테고리 집계 (고정비 제외)
+  const catMap = {};
+  mExp.filter(t => !FIXED_CATS.has(t.cat)).forEach(t => {
+    if (!catMap[t.cat]) catMap[t.cat] = {total:0, h:0, w:0};
+    catMap[t.cat].total += Math.abs(t.amount);
+    catMap[t.cat][t.person] += Math.abs(t.amount);
+  });
+  const topCats = Object.entries(catMap).sort((a,b)=>b[1].total-a[1].total);
+
+  // Alert 카드 생성
+  const alerts = [];
+  if (topCats.length >= 1) {
+    const [cat1, v1] = topCats[0];
+    alerts.push({color:'red', icon:'💸', title:`${m.slice(5)}월 지출 1위 — ${cat1}`, amt:v1.total,
+      body:`이달 ${cat1} 지출 합계. 클릭해서 상세 확인.`,
+      onclick:`openModal('cat_${encodeURIComponent(cat1)}','${cat1}')`});
+  }
+  if (topCats.length >= 2) {
+    const [cat2, v2] = topCats[1];
+    alerts.push({color:'yellow', icon:'📊', title:`지출 2위 — ${cat2}`, amt:v2.total,
+      body:`이달 ${cat2} 지출. 전체 가계 지출의 ${catMap[cat2]?Math.round(catMap[cat2].total/Math.max(expense,1)*100):0}%.`,
+      onclick:`openModal('cat_${encodeURIComponent(cat2)}','${cat2}')`});
+  }
+  // 전월 대비 가장 많이 늘어난 카테고리
+  if (prevData) {
+    const prevMTxs = visibleTx().filter(t => t.month === prevData.month && t.type === '지출' && !FIXED_CATS.has(t.cat));
+    const prevCatMap = {};
+    prevMTxs.forEach(t => {
+      if (!prevCatMap[t.cat]) prevCatMap[t.cat] = 0;
+      prevCatMap[t.cat] += Math.abs(t.amount);
+    });
+    const diffs = topCats.map(([cat, v]) => ({cat, diff: v.total - (prevCatMap[cat]||0)}))
+      .filter(x => x.diff > 0).sort((a,b)=>b.diff-a.diff);
+    if (diffs.length) {
+      alerts.push({color:'blue', icon:'📈', title:`전월 대비 증가 — ${diffs[0].cat}`, amt:diffs[0].diff,
+        body:`지난달보다 ${fmt(diffs[0].diff)}원 더 지출했어요.`,
+        onclick:`openModal('cat_${encodeURIComponent(diffs[0].cat)}','${diffs[0].cat}')`});
+    }
+    const bigSave = topCats.map(([cat, v]) => ({cat, diff: (prevCatMap[cat]||0) - v.total}))
+      .filter(x => x.diff > 50000).sort((a,b)=>b.diff-a.diff);
+    if (bigSave.length) {
+      alerts.push({color:'green', icon:'✂️', title:`절감 성공 — ${bigSave[0].cat}`, amt:bigSave[0].diff,
+        body:`지난달 대비 ${fmt(bigSave[0].diff)}원 절약했어요!`,
+        onclick:`openModal('cat_${encodeURIComponent(bigSave[0].cat)}','${bigSave[0].cat}')`});
+    }
+  }
+  // 최대 4개 alert
+  const alertPairs = [];
+  for (let i = 0; i < Math.min(4, alerts.length); i += 2) {
+    alertPairs.push(alerts.slice(i, i+2));
+  }
+  document.getElementById('ins-alerts').innerHTML = alertPairs.map(pair =>
+    `<div>${pair.map(a=>`
+      <div class="alert ${a.color}" style="cursor:pointer;" onclick="${a.onclick}">
+        <div class="al-t">${a.icon} ${a.title}</div>
+        <div class="al-a">${fmt(a.amt)}원</div>
+        <div class="al-b">${a.body}</div>
+      </div>`).join('')}</div>`
+  ).join('');
+
+  // 훈서 vs 시온 이달 지출
+  const hExp = mExp.filter(t=>t.person==='h').reduce((a,t)=>a+Math.abs(t.amount),0);
+  const wExp = mExp.filter(t=>t.person==='w').reduce((a,t)=>a+Math.abs(t.amount),0);
+  document.getElementById('ins-hw-summary').innerHTML = `
+    <div style="flex:1;background:#EEF2FF;border-radius:9px;padding:11px;text-align:center;">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">훈서</div>
+      <div style="font-size:17px;font-weight:800;color:var(--navy);">${fmt(hExp)}원</div>
+    </div>
+    <div style="flex:1;background:#FFF0EE;border-radius:9px;padding:11px;text-align:center;">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">시온</div>
+      <div style="font-size:17px;font-weight:800;color:var(--coral);">${fmt(wExp)}원</div>
+    </div>`;
+
+  // 카테고리 바 (고정비 제외)
+  const maxC = topCats[0] ? topCats[0][1].total : 1;
+  document.getElementById('ins-cat-bars').innerHTML = topCats.slice(0,8).map(([cat,v])=>{
+    const hp = v.total>0 ? Math.round(v.h/v.total*100) : 0;
     return `<div style="margin-bottom:8px;cursor:pointer;" onclick="openModal('cat_${encodeURIComponent(cat)}','${cat}')">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
         <span style="color:var(--navy2);">${cat}</span><span style="font-weight:700;color:var(--muted);">${fmt(v.total)}</span>
@@ -645,7 +734,58 @@ function initInsights() {
         <span>훈 ${fmt(v.h)}</span><span>시 ${fmt(v.w)}</span>
       </div>
     </div>`;
-  }).join('');
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px;">이달 지출 데이터 없음</div>';
+
+  // 전월 대비 트렌드 바
+  document.getElementById('ins-trend-title').textContent = prevData
+    ? `${prevData.month.slice(5)}월 → ${m.slice(5)}월 변화`
+    : '카테고리별 지출';
+  if (prevData) {
+    const prevMTxs2 = visibleTx().filter(t => t.month === prevData.month && t.type === '지출' && !FIXED_CATS.has(t.cat));
+    const prevCatMap2 = {};
+    prevMTxs2.forEach(t => {
+      if (!prevCatMap2[t.cat]) prevCatMap2[t.cat] = 0;
+      prevCatMap2[t.cat] += Math.abs(t.amount);
+    });
+    const allTrendCats = [...new Set([...Object.keys(catMap), ...Object.keys(prevCatMap2)])];
+    const trendData = allTrendCats.map(cat => ({
+      cat, cur: catMap[cat]?.total||0, prev: prevCatMap2[cat]||0
+    })).filter(x=>x.cur>0||x.prev>0).sort((a,b)=>b.cur-a.cur).slice(0,7);
+    const maxT = Math.max(...trendData.map(x=>Math.max(x.cur,x.prev)), 1);
+    document.getElementById('ins-trend-bars').innerHTML = trendData.map(x => {
+      const diff = x.cur - x.prev;
+      const col = diff > 0 ? 'var(--coral)' : diff < 0 ? 'var(--teal)' : 'var(--muted)';
+      return `<div style="margin-bottom:9px;cursor:pointer;" onclick="openModal('cat_${encodeURIComponent(x.cat)}','${x.cat}')">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">
+          <span style="color:var(--navy2);">${x.cat}</span>
+          <span style="font-weight:700;color:${col};">${diff>0?'+':''}${fmt(diff)}</span>
+        </div>
+        <div style="height:4px;background:#ECEAE4;border-radius:2px;overflow:hidden;margin-bottom:1px;">
+          <div style="width:${Math.round(x.prev/maxT*100)}%;height:100%;background:var(--muted);border-radius:2px;opacity:.5;"></div>
+        </div>
+        <div style="height:4px;background:#ECEAE4;border-radius:2px;overflow:hidden;">
+          <div style="width:${Math.round(x.cur/maxT*100)}%;height:100%;background:${CAT_COLORS[x.cat]||'#888'};border-radius:2px;"></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    document.getElementById('ins-trend-bars').innerHTML = topCats.slice(0,7).map(([cat,v])=>`
+      <div class="hbar" onclick="openModal('cat_${encodeURIComponent(cat)}','${cat}')">
+        <div class="hbn">${cat}</div>
+        <div class="hbt"><div class="hbf" style="width:${Math.round(v.total/maxC*100)}%;background:${CAT_COLORS[cat]||'#888'};"></div></div>
+        <div class="hba">${fmt(v.total)}</div>
+      </div>`).join('');
+  }
+
+  // 펀 카드 (신용점수, 데이터 기간)
+  const firstM = RAW.monthly[0]?.month || '';
+  const lastM = RAW.monthly[RAW.monthly.length-1]?.month || '';
+  const hCredit = RAW.h_assets?.credit_score || 0;
+  const wCredit = RAW.w_assets?.credit_score || 0;
+  document.getElementById('ins-fun-cards').innerHTML = `
+    <div class="fun-card"><div class="fc-lbl">데이터 기간</div><div class="fc-val">${firstM.slice(2).replace('-','/')} ~ ${lastM.slice(2).replace('-','/')}</div><div class="fc-desc">총 ${RAW.monthly.length}개월 · 거래 ${((RAW.meta?.tx_count?.h||0)+(RAW.meta?.tx_count?.w||0)).toLocaleString()}건</div></div>
+    <div class="fun-card"><div class="fc-lbl">신용점수 🏆</div><div class="fc-val">훈 ${hCredit} · 시 ${wCredit}</div><div class="fc-desc">부부 합산 ${hCredit+wCredit}점. ${wCredit===1000?'시온 만점 달성!':''}</div></div>
+    <div class="fun-card"><div class="fc-lbl">합산 순자산</div><div class="fc-val">${fmt(RAW.combined.net_assets)}원</div><div class="fc-desc">훈 ${fmt(RAW.h_assets?.net_assets||0)} · 시 ${fmt(RAW.w_assets?.net_assets||0)}</div></div>`;
 }
 
 function initAssetGraphPage() {
@@ -739,7 +879,6 @@ function initAssetGraphPage() {
 //  MODAL SYSTEM
 // ═══════════════════════
 let _curModal='', _curTxList=[], _sortMode='date-desc', _personFilter='all';
-Charts._chartInstances = {};
 
 function openModal(type, title) {
   _curModal=type;
@@ -850,7 +989,7 @@ function renderModal(type) {
 
 // ── TX CONTROLS ──
 function renderTxControls(el, txs) {
-  const months=[...new Set(txs.map(t=>t.month))].sort().slice(-6);
+  const months=[...new Set(txs.map(t=>t.month).filter(Boolean))].sort().slice(-6);
   el.innerHTML=`
     <button class="ctrl-btn ${_personFilter==='all'?'active':''}" onclick="setFilter('all',this)">전체 (${txs.length})</button>
     ${txs.some(t=>t.person==='h')?`<button class="ctrl-btn ${_personFilter==='h'?'active':''}" onclick="setFilter('h',this)">훈서</button>`:''}
@@ -906,15 +1045,19 @@ function renderTxList(el, txs) {
   el.innerHTML=sorted.map(t=>{
     const modified=ov[t.id]!==undefined;
     const isExp=t.type==='지출';
-    return `<div class="tx-item" onclick="openEditModal('${t.id}')">
+    return `<div class="tx-item">
       <div class="tx-date">${t.date.slice(5)}</div>
       <span class="ptag ${t.person}">${t.person==='h'?'훈':'시'}</span>
-      <div class="tx-dw">
+      <div class="tx-dw" onclick="openEditModal('${t.id}')" style="cursor:pointer;">
         <div class="tx-desc">${t.desc}</div>
-        <div class="tx-method">${t.method}</div>
+        <div class="tx-method">${t.method||''}</div>
       </div>
-      <span class="tx-ctag ${modified?'mod':''}" onclick="event.stopPropagation();openEditModal('${t.id}')">${t.cat}${modified?' ✏️':''}</span>
+      <span class="tx-ctag ${modified?'mod':''}" onclick="openEditModal('${t.id}')">${t.cat}${modified?' ✏️':''}</span>
       <div class="tx-amt ${isExp?'exp':'inc'}">${isExp?'-':'+'}${fmt(Math.abs(t.amount))}</div>
+      <div class="tx-actions">
+        <button class="tx-act-btn edit" onclick="openEditModal('${t.id}')" title="수정">✏</button>
+        <button class="tx-act-btn del" onclick="quickDelete('${t.id}')" title="삭제">✕</button>
+      </div>
     </div>`;
   }).join('');
 }
@@ -950,6 +1093,21 @@ function openEditModal(txId) {
   document.getElementById('edit-info').textContent = `${cur.date} · ${fmt(Math.abs(cur.amount))}원 · ${cur.method}`;
 
   document.getElementById('editModal').classList.add('open');
+}
+
+function quickDelete(txId) {
+  const tx = RAW.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  const sameDesc = RAW.transactions.filter(t => t.desc === tx.desc);
+  showConfirm(
+    '삭제 확인',
+    `"${tx.desc}" 내역을 삭제할까요?`,
+    [
+      { label: `이 내역만 삭제 (1건)`, action: () => applyDelete([txId]) },
+      sameDesc.length > 1 ? { label: `같은 이름 전체 삭제 (${sameDesc.length}건)`, primary: true, action: () => applyDelete(sameDesc.map(t => t.id)) } : null,
+      { label: '취소', action: () => {} }
+    ].filter(Boolean)
+  );
 }
 
 function closeEdit() {

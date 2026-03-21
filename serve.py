@@ -30,6 +30,7 @@ def parse_transactions(rows):
             'id': r['id'],
             'person': r['person'],
             'date': r['date'],
+            'month': r['date'][:7],
             'time': r.get('time', ''),
             'type': r['type'],
             'cat': r['category'],
