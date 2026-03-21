@@ -478,10 +478,8 @@ const CAT_COLORS = {
   '자녀/육아':'#C88020',
 };
 
-let OVERRIDES = {}; // {id: {cat, desc, deleted}}
-try { OVERRIDES = JSON.parse(localStorage.getItem('h_overrides')||'{}'); } catch(e){}
-
-function saveOV() { localStorage.setItem('h_overrides', JSON.stringify(OVERRIDES)); }
+let OVERRIDES = {}; // populated from RAW.overrides after loadData()
+// localStorage is no longer used — overrides are persisted to db/overrides.csv via API
 function getTx(t) {
   const ov = OVERRIDES[t.id];
   return ov ? {...t, cat: ov.cat||t.cat, desc: ov.desc||t.desc, _deleted: ov.deleted||false} : {...t, _deleted:false};
@@ -531,6 +529,7 @@ async function loadData() {
     return;
   }
   CATS = RAW.all_cats;
+  OVERRIDES = RAW.overrides || {};
   initDashboard();
   initInsights();
 }
@@ -978,12 +977,26 @@ function deleteThisTx() {
   );
 }
 
-function applyDelete(ids) {
-  ids.forEach(id => {
-    if (!OVERRIDES[id]) OVERRIDES[id] = {};
-    OVERRIDES[id].deleted = true;
-  });
-  saveOV();
+async function applyDelete(ids) {
+  // Call API for each id (use bulk-override for single deletes too if only one, or one-by-one)
+  if (ids.length === 1) {
+    await fetch('/api/delete', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: ids[0]})
+    });
+    OVERRIDES[ids[0]] = {deleted: true};
+  } else {
+    // For multiple deletes, call /api/delete for each
+    await Promise.all(ids.map(id =>
+      fetch('/api/delete', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id})
+      })
+    ));
+    ids.forEach(id => { OVERRIDES[id] = {deleted: true}; });
+  }
   if (_curModal) renderModal(_curModal);
 }
 
@@ -1023,13 +1036,28 @@ function submitEdit() {
   showConfirm('어떻게 적용할까요?', `수정 내용: ${descChanged?'이름 "'+newDesc+'"':''}${descChanged&&catChanged?' / ':''}${catChanged?'카테고리 "'+newCat+'"':''}`, opts);
 }
 
-function applyEdit(ids, newDesc, newCat) {
-  ids.forEach(id => {
-    if (!OVERRIDES[id]) OVERRIDES[id] = {};
-    if (newDesc !== null) OVERRIDES[id].desc = newDesc;
-    if (newCat  !== null) OVERRIDES[id].cat  = newCat;
-  });
-  saveOV();
+async function applyEdit(ids, newDesc, newCat) {
+  if (ids.length === 1) {
+    await fetch('/api/override', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: ids[0], cat: newCat, desc: newDesc})
+    });
+    if (!OVERRIDES[ids[0]]) OVERRIDES[ids[0]] = {};
+    if (newDesc !== null) OVERRIDES[ids[0]].desc = newDesc;
+    if (newCat  !== null) OVERRIDES[ids[0]].cat  = newCat;
+  } else {
+    await fetch('/api/bulk-override', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ids, cat: newCat, desc: newDesc})
+    });
+    ids.forEach(id => {
+      if (!OVERRIDES[id]) OVERRIDES[id] = {};
+      if (newDesc !== null) OVERRIDES[id].desc = newDesc;
+      if (newCat  !== null) OVERRIDES[id].cat  = newCat;
+    });
+  }
   if (_curModal) renderModal(_curModal);
 }
 
