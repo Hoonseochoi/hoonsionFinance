@@ -1,3 +1,8 @@
 .claude/
 *.tmp
 *.xlsx
+
+db/transactions.csv
+db/assets.csv
+db/overrides.csv
+db/serve.log
