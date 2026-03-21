@@ -970,7 +970,7 @@ function deleteThisTx() {
     '삭제 확인',
     `"${tx.desc}" 내역을 삭제할까요?\n같은 이름의 내역이 ${sameDesc.length}건 있습니다.`,
     [
-      { label: `이 내역만 삭제 (1건)`, action: ()=>{ applyDelete([_editId||tx.id]); } },
+      { label: `이 내역만 삭제 (1건)`, action: ()=>{ applyDelete([tx.id]); } },
       sameDesc.length > 1 ? { label: `같은 이름 전체 삭제 (${sameDesc.length}건)`, primary: true, action: ()=>{ applyDelete(sameDesc.map(t=>t.id)); } } : null,
       { label: '취소', action: ()=>{} }
     ].filter(Boolean)
@@ -978,24 +978,31 @@ function deleteThisTx() {
 }
 
 async function applyDelete(ids) {
-  // Call API for each id (use bulk-override for single deletes too if only one, or one-by-one)
-  if (ids.length === 1) {
-    await fetch('/api/delete', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({id: ids[0]})
-    });
-    OVERRIDES[ids[0]] = {deleted: true};
-  } else {
-    // For multiple deletes, call /api/delete for each
-    await Promise.all(ids.map(id =>
-      fetch('/api/delete', {
+  try {
+    // Call API for each id (use bulk-override for single deletes too if only one, or one-by-one)
+    if (ids.length === 1) {
+      const r = await fetch('/api/delete', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id})
-      })
-    ));
-    ids.forEach(id => { OVERRIDES[id] = {deleted: true}; });
+        body: JSON.stringify({id: ids[0]})
+      });
+      if (!r.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
+      OVERRIDES[ids[0]] = {deleted: true};
+    } else {
+      // For multiple deletes, call /api/delete for each
+      const results = await Promise.all(ids.map(id =>
+        fetch('/api/delete', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({id})
+        })
+      ));
+      if (results.some(r => !r.ok)) { alert('저장 실패: 일부 항목 저장에 실패했습니다.'); return; }
+      ids.forEach(id => { OVERRIDES[id] = {deleted: true}; });
+    }
+  } catch (e) {
+    alert('저장 실패: 네트워크 오류가 발생했습니다.');
+    return;
   }
   if (_curModal) renderModal(_curModal);
 }
@@ -1037,26 +1044,33 @@ function submitEdit() {
 }
 
 async function applyEdit(ids, newDesc, newCat) {
-  if (ids.length === 1) {
-    await fetch('/api/override', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({id: ids[0], cat: newCat, desc: newDesc})
-    });
-    if (!OVERRIDES[ids[0]]) OVERRIDES[ids[0]] = {};
-    if (newDesc !== null) OVERRIDES[ids[0]].desc = newDesc;
-    if (newCat  !== null) OVERRIDES[ids[0]].cat  = newCat;
-  } else {
-    await fetch('/api/bulk-override', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ids, cat: newCat, desc: newDesc})
-    });
-    ids.forEach(id => {
-      if (!OVERRIDES[id]) OVERRIDES[id] = {};
-      if (newDesc !== null) OVERRIDES[id].desc = newDesc;
-      if (newCat  !== null) OVERRIDES[id].cat  = newCat;
-    });
+  try {
+    if (ids.length === 1) {
+      const response = await fetch('/api/override', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: ids[0], cat: newCat, desc: newDesc})
+      });
+      if (!response.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
+      if (!OVERRIDES[ids[0]]) OVERRIDES[ids[0]] = {};
+      if (newDesc !== null) OVERRIDES[ids[0]].desc = newDesc;
+      if (newCat  !== null) OVERRIDES[ids[0]].cat  = newCat;
+    } else {
+      const response = await fetch('/api/bulk-override', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ids, cat: newCat, desc: newDesc})
+      });
+      if (!response.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
+      ids.forEach(id => {
+        if (!OVERRIDES[id]) OVERRIDES[id] = {};
+        if (newDesc !== null) OVERRIDES[id].desc = newDesc;
+        if (newCat  !== null) OVERRIDES[id].cat  = newCat;
+      });
+    }
+  } catch (e) {
+    alert('저장 실패: 네트워크 오류가 발생했습니다.');
+    return;
   }
   if (_curModal) renderModal(_curModal);
 }
