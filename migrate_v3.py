@@ -51,8 +51,8 @@ def assets_row(person_key, person):
     a = RAW.get(person_key, {})
     investments = a.get('investments', [])
     loans = a.get('loans', [])
-    # snapshot_date may not exist in this version; use empty string as fallback
-    snapshot_date = a.get('snapshot_date', '')
+    # snapshot_date may not exist in this version; default to 2026-03
+    snapshot_date = a.get('snapshot_date', '2026-03')
     # dc/irp pension: check within the person's asset dict first, then top-level RAW
     if person == 'h':
         dc_pension  = a.get('h_dc',  RAW.get('h_dc',  0))
@@ -61,7 +61,7 @@ def assets_row(person_key, person):
         dc_pension  = 0
         irp_pension = 0
     return {
-        'snapshot_date':    snapshot_date,
+        'snapshot_date':    a.get('snapshot_date', '2026-03'),
         'person':           person,
         'total_assets':     a.get('total_assets', 0),
         'total_liabilities': a.get('total_liabilities', 0),
