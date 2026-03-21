@@ -288,25 +288,39 @@ def apply_classification(desc, orig_cat, rules):
 
 ---
 
-## 7. HTML 대시보드 시스템 설명
+## 7. 대시보드 시스템 설명 (v4 — CSV DB + 로컬 서버)
+
+> **v4부터 아키텍처 변경**: 정적 HTML 방식에서 로컬 서버 방식으로 전환.
+> `build_dashboard.py`는 더 이상 사용하지 않음 (`archive/`로 이동).
 
 ### 7-1. 파일 구성
 ```
 C:\Users\chlgn\OneDrive\Desktop\mydata\
-├── ANALYSIS_GUIDE.md          ← 이 문서 (분석 방법론)
-├── classifications.csv        ← 자동 분류 규칙
-├── build_dashboard.py         ← 대시보드 생성 스크립트
-├── 가계_대시보드_v3.html      ← 실제 대시보드 (브라우저에서 열기)
-└── [매달 업데이트] YYMMDD_mydata.xlsx
+│
+├── db/                          ← 단일 진실 소스 (CSV 데이터베이스)
+│   ├── transactions.csv         ← 전체 거래내역 (훈서+시온, 전체 기간)
+│   ├── assets.csv               ← 월별 자산 스냅샷
+│   └── overrides.csv            ← 대시보드 수정/삭제 내용 (영구 저장)
+│
+├── serve.py                     ← 로컬 서버 (포트 8080)
+├── dashboard.html               ← 대시보드 (serve.py가 서빙)
+├── classifications.csv          ← 자동 분류 규칙 (그대로 유지)
+├── ANALYSIS_GUIDE.md            ← 이 문서
+├── start_server.bat             ← Windows 자동 시작 배치 파일
+│
+└── archive/                     ← 더 이상 사용 안 하는 파일
+    ├── build_dashboard.py
+    └── 가계_대시보드_v3.html
 ```
 
-### 7-2. build_dashboard.py 실행 방법
-```bash
-# 새 xlsx 파일이 생기면:
-python3 build_dashboard.py 새파일.xlsx 출력경로/
+### 7-2. 대시보드 실행 방법
 
-# 예시:
-python3 build_dashboard.py 260421mydata.xlsx C:\Users\chlgn\OneDrive\Desktop\mydata\
+**부팅 시 자동 실행됨** (start_server.bat이 시작 프로그램에 등록됨).
+브라우저에서 `http://localhost:8080` 접속.
+
+수동으로 시작해야 할 때:
+```bash
+python serve.py
 ```
 
 ### 7-3. 대시보드 기능 목록
@@ -316,12 +330,47 @@ python3 build_dashboard.py 260421mydata.xlsx C:\Users\chlgn\OneDrive\Desktop\myd
 | 클릭 상세 모달 | 모든 카드/바 클릭 시 거래내역 팝업 |
 | 정렬 | 최신순/오래된순/금액↓/금액↑ |
 | 필터 | 훈서/시온/월별 필터 동시 적용 |
-| 내역 편집 | 클릭 → 이름/카테고리 수정 |
+| 내역 편집 | 클릭 → 이름/카테고리 수정 → `db/overrides.csv`에 영구 저장 |
 | 동시 수정 | 같은 이름 전체 or 같은 카테고리 전체 일괄 변경 |
 | 삭제 | 단건 or 같은 이름 전체 삭제 |
-| localStorage 저장 | 수정/삭제 내용 브라우저에 영구 저장 |
+| **영구 저장** | 수정/삭제가 파일에 저장 — 새 데이터 들어와도 유지됨 |
 
-### 7-4. 금액 포맷 규칙
+### 7-4. db/ CSV 스키마
+
+**transactions.csv** (거래내역):
+```
+id, person, date, time, type, category, subcategory, desc, amount, currency, method, memo
+```
+- `id`: `h_0`, `w_0` 형식. person별 단조증가. 재사용 절대 금지
+- `person`: `h`(훈서) / `w`(시온)
+- `type`: `수입` / `지출` / `이체`
+- `amount`: 지출 음수(-), 수입 양수(+)
+
+**assets.csv** (자산 스냅샷):
+```
+snapshot_date, person, total_assets, total_liabilities, net_assets, credit_score,
+dc_pension, irp_pension, investments_json, loans_json
+```
+- `snapshot_date`: `YYYY-MM` 형식. 같은 달 같은 person이면 덮어쓰기
+- `investments_json`, `loans_json`: JSON 직렬화 문자열
+
+**overrides.csv** (편집 내용):
+```
+id, cat, desc, deleted, updated_at
+```
+- 대시보드 수정/삭제 시 serve.py가 자동 관리. Claude가 건드리지 않음
+
+### 7-5. serve.py API 엔드포인트
+
+| 메서드 | 경로 | 설명 |
+|---|---|---|
+| GET | `/` | dashboard.html 서빙 |
+| GET | `/api/data` | 전체 데이터 + 집계 JSON 반환 |
+| POST | `/api/override` | `{"id":"h_0","cat":"금융","desc":"이름"}` |
+| POST | `/api/delete` | `{"id":"h_0"}` |
+| POST | `/api/bulk-override` | `{"ids":[...],"cat":"금융","desc":null}` |
+
+### 7-6. 금액 포맷 규칙
 ```javascript
 function fmt(n) {
   if (n >= 100000000) return (n/100000000).toFixed(2) + '억';   // 1.35억
@@ -332,40 +381,40 @@ function fmt(n) {
 // 수익률: (v>=0?'+':'') + v.toFixed(2) + '%'  → +103.71%
 ```
 
-### 7-5. localStorage 키 구조
-```javascript
-// 수정/삭제 내용 저장
-localStorage.setItem('h_overrides', JSON.stringify({
-  'h_965': { cat: '금융', desc: '아이엠삼송 전세이자' },
-  'h_1836': { cat: '투자', desc: '업비트 코인 투자' },
-  'h_999': { deleted: true }
-}));
-```
-
 ---
 
 ## 8. 매달 업데이트 절차 (Claude Code 활용)
+
+> **v4부터 절차 변경**: 대시보드 HTML을 새로 만들지 않음.
+> Claude가 xlsx를 분석해서 db/ CSV에 직접 추가.
 
 ### 8-1. 체크리스트
 ```
 [ ] 뱅크샐러드에서 훈서/시온 마이데이터 내보내기 (XLSX)
 [ ] 파일을 C:\Users\chlgn\OneDrive\Desktop\mydata\ 에 저장
-[ ] Claude Code에서:
-    "새 마이데이터 파일로 대시보드 업데이트해줘"
+[ ] Claude Code에서: "새 마이데이터 파일이야, DB에 추가해줘"
 [ ] classifications.csv에 새로운 패턴 추가됐으면 반영 확인
-[ ] 이전 달 수정 내용(localStorage)은 브라우저에 유지됨
+[ ] 이전 수정 내용(overrides.csv)은 자동으로 유지됨
 ```
 
 ### 8-2. Claude Code 프롬프트 예시
 ```
 새 마이데이터 파일(260421mydata.xlsx)이 있어.
 ANALYSIS_GUIDE.md 참고해서 분석하고
-대시보드 HTML 새로 만들어줘.
-분류는 classifications.csv 적용하고
-이번 달 특이사항 있으면 인사이트 탭에 추가해줘.
+db/transactions.csv와 db/assets.csv에 새 데이터 추가해줘.
+마지막 저장 날짜 이후 거래만 추가하고, 중복 5건 검증해줘.
+classifications.csv 적용하고 특이사항 있으면 말해줘.
 ```
 
-### 8-3. 신규 거래 패턴이 생기면
+### 8-3. Claude가 임포트 시 수행할 작업
+1. xlsx 파싱 + `classifications.csv` 적용
+2. `db/transactions.csv`에서 person별 마지막 날짜 확인
+3. 해당 날짜 **엄격히 이후** 거래만 추출 (같은 날은 제외)
+4. 마지막 5건 중복 검증 후 append
+5. `db/assets.csv`에 최신 스냅샷 추가 (같은 달이면 덮어쓰기)
+6. `db/overrides.csv`는 절대 건드리지 않음
+
+### 8-4. 신규 거래 패턴이 생기면
 ```
 # classifications.csv에 추가:
 새로운키워드,카테고리,표시이름,메모
@@ -422,6 +471,7 @@ ANALYSIS_GUIDE.md 참고해서 분석하고
 | v2 | 2026-03-22 | 클릭 모달, 카테고리 편집, localStorage 추가 |
 | v3 | 2026-03-22 | 자산 그래프 탭, 정렬/필터, 편집 모달 개선 |
 | 이 문서 | 2026-03-22 | 분석 방법론 MD 작성 (ANALYSIS_GUIDE.md) |
+| v4 | 2026-03-22 | CSV DB + 로컬 서버 아키텍처로 전환 (serve.py + dashboard.html) |
 
 ---
 
