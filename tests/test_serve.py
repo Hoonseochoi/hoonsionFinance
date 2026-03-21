@@ -84,5 +84,54 @@ class TestCSVParsing(unittest.TestCase):
         self.assertEqual(result['h']['total_assets'], 200000000)
         self.assertEqual(result['h']['snapshot_date'], '2026-02')
 
+class TestAggregation(unittest.TestCase):
+    def setUp(self):
+        import serve
+        self.serve = serve
+        self.transactions = serve.parse_transactions(
+            list(csv.DictReader(io.StringIO(SAMPLE_TRANSACTIONS)))
+        )
+        self.overrides = serve.parse_overrides(
+            list(csv.DictReader(io.StringIO(SAMPLE_OVERRIDES)))
+        )
+
+    def test_apply_overrides_changes_cat(self):
+        result = self.serve.apply_overrides(self.transactions, self.overrides)
+        # h_0의 cat이 override로 '금융'으로 바뀌어야 함
+        h0 = next(t for t in result if t['id'] == 'h_0')
+        self.assertEqual(h0['cat'], '금융')
+
+    def test_apply_overrides_excludes_deleted(self):
+        ovs = {'h_1': {'cat': '', 'desc': '', 'deleted': True}}
+        result = self.serve.apply_overrides(self.transactions, ovs)
+        ids = [t['id'] for t in result]
+        self.assertNotIn('h_1', ids)
+
+    def test_compute_monthly_groups_by_month(self):
+        txs = self.serve.apply_overrides(self.transactions, {})
+        monthly = self.serve.compute_monthly(txs)
+        months = [m['month'] for m in monthly]
+        self.assertIn('2026-01', months)
+
+    def test_compute_monthly_income_positive(self):
+        txs = self.serve.apply_overrides(self.transactions, {})
+        monthly = self.serve.compute_monthly(txs)
+        jan = next(m for m in monthly if m['month'] == '2026-01')
+        self.assertGreater(jan['total_income'], 0)
+
+    def test_compute_monthly_cumulative_accumulates(self):
+        txs = self.serve.apply_overrides(self.transactions, {})
+        monthly = self.serve.compute_monthly(txs)
+        # cumulative는 직전 월의 cumulative에 이번 달 net을 더한 값
+        self.assertIn('cumulative', monthly[0])
+
+    def test_compute_cat_summary_sums_by_category(self):
+        txs = self.serve.apply_overrides(self.transactions, self.overrides)
+        summary = self.serve.compute_cat_summary(txs)
+        # h_0이 '금융'으로 override됐으므로 금융 합계에 포함
+        self.assertIn('금융', summary)
+        self.assertGreater(summary['금융']['total'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()

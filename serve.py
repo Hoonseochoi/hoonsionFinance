@@ -80,3 +80,74 @@ def parse_overrides(rows):
             'deleted': r.get('deleted', 'false').lower() == 'true',
         }
     return result
+
+
+def apply_overrides(transactions, overrides):
+    """override 적용 + deleted 제거 → 정제된 트랜잭션 리스트."""
+    result = []
+    for t in transactions:
+        ov = overrides.get(t['id'])
+        if ov and ov['deleted']:
+            continue
+        tx = dict(t)
+        if ov:
+            if ov['cat']:  tx['cat']  = ov['cat']
+            if ov['desc']: tx['desc'] = ov['desc']
+        result.append(tx)
+    return result
+
+
+def compute_monthly(transactions):
+    """월별 수입/지출/누적 집계. 이체 타입은 제외."""
+    from collections import defaultdict
+    monthly = defaultdict(lambda: {'total_income': 0, 'total_expense': 0})
+    for t in transactions:
+        if t['type'] == '이체':
+            continue
+        month = t['date'][:7]  # YYYY-MM
+        if t['amount'] > 0:
+            monthly[month]['total_income'] += t['amount']
+        else:
+            monthly[month]['total_expense'] += t['amount']
+
+    result = []
+    cumulative = 0
+    for month in sorted(monthly.keys()):
+        d = monthly[month]
+        net = d['total_income'] + d['total_expense']
+        cumulative += net
+        result.append({
+            'month': month,
+            'total_income': d['total_income'],
+            'total_expense': d['total_expense'],
+            'cumulative': cumulative,
+        })
+    return result
+
+
+def compute_cat_summary(transactions):
+    """카테고리별 합계 집계. 지출 타입만, 이체 제외."""
+    from collections import defaultdict
+    summary = defaultdict(lambda: {'total': 0, 'h': 0, 'w': 0})
+    for t in transactions:
+        if t['type'] != '지출':
+            continue
+        cat = t['cat']
+        amt = abs(t['amount'])
+        summary[cat]['total'] += amt
+        summary[cat][t['person']] += amt
+    return dict(summary)
+
+
+def compute_combined(h_assets, w_assets):
+    """합산 재무 통계."""
+    h_inv = sum(i.get('value', 0) for i in h_assets.get('investments', []))
+    w_inv = sum(i.get('value', 0) for i in w_assets.get('investments', []))
+    h_cost = sum(i.get('cost', 0) for i in h_assets.get('investments', []))
+    w_cost = sum(i.get('cost', 0) for i in w_assets.get('investments', []))
+    return {
+        'net_assets': h_assets.get('net_assets', 0) + w_assets.get('net_assets', 0),
+        'total_liabilities': h_assets.get('total_liabilities', 0) + w_assets.get('total_liabilities', 0),
+        'invest_total_value': h_inv + w_inv,
+        'invest_total_cost': h_cost + w_cost,
+    }
