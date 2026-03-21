@@ -313,6 +313,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
                 self.send_header('Content-Length', len(body))
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(body)
             except FileNotFoundError:
@@ -327,17 +328,23 @@ class Handler(BaseHTTPRequestHandler):
             self._json({'error': 'invalid json'}, 400)
             return
 
-        if self.path == '/api/override':
-            save_override(body['id'], body.get('cat'), body.get('desc'))
-            self._json({'ok': True})
-        elif self.path == '/api/delete':
-            save_delete(body['id'])
-            self._json({'ok': True})
-        elif self.path == '/api/bulk-override':
-            save_bulk_override(body['ids'], body.get('cat'), body.get('desc'))
-            self._json({'ok': True})
-        else:
-            self._json({'error': 'not found'}, 404)
+        try:
+            if self.path == '/api/override':
+                save_override(body['id'], body.get('cat'), body.get('desc'))
+                self._json({'ok': True})
+            elif self.path == '/api/delete':
+                save_delete(body['id'])
+                self._json({'ok': True})
+            elif self.path == '/api/bulk-override':
+                save_bulk_override(body['ids'], body.get('cat'), body.get('desc'))
+                self._json({'ok': True})
+            else:
+                self._json({'error': 'not found'}, 404)
+        except KeyError as e:
+            self._json({'error': f'missing field: {e}'}, 400)
+        except Exception as e:
+            logging.error('POST %s error: %s', self.path, e, exc_info=True)
+            self._json({'error': str(e)}, 500)
 
 
 if __name__ == '__main__':
