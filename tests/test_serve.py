@@ -23,6 +23,7 @@ class TestCSVParsing(unittest.TestCase):
     def setUp(self):
         import serve
         self.serve = serve
+        # 픽스처 문자열을 CSV 행 리스트로 파싱
         self.tx_rows = list(csv.DictReader(io.StringIO(SAMPLE_TRANSACTIONS)))
         self.asset_rows = list(csv.DictReader(io.StringIO(SAMPLE_ASSETS)))
         self.ov_rows = list(csv.DictReader(io.StringIO(SAMPLE_OVERRIDES)))
@@ -54,6 +55,34 @@ class TestCSVParsing(unittest.TestCase):
     def test_parse_overrides_deleted_is_bool(self):
         result = self.serve.parse_overrides(self.ov_rows)
         self.assertFalse(result['h_0']['deleted'])
+
+    def test_parse_transactions_empty(self):
+        result = self.serve.parse_transactions([])
+        self.assertEqual(result, [])
+
+    def test_parse_assets_empty(self):
+        result = self.serve.parse_assets([])
+        self.assertEqual(result, {})
+
+    def test_parse_overrides_empty(self):
+        result = self.serve.parse_overrides([])
+        self.assertEqual(result, {})
+
+    def test_parse_overrides_deleted_case_insensitive(self):
+        rows = list(csv.DictReader(io.StringIO("id,cat,desc,deleted,updated_at\nh_1,금융,테스트,True,2026-01-01\n")))
+        result = self.serve.parse_overrides(rows)
+        self.assertTrue(result['h_1']['deleted'])
+
+    def test_parse_assets_keeps_latest_snapshot(self):
+        # Two rows for same person, different dates — should keep latest
+        two_months = """snapshot_date,person,total_assets,total_liabilities,net_assets,credit_score,dc_pension,irp_pension,investments_json,loans_json
+2026-01,h,100000000,0,100000000,974,0,0,"[]","[]"
+2026-02,h,200000000,0,200000000,974,0,0,"[]","[]"
+"""
+        rows = list(csv.DictReader(io.StringIO(two_months)))
+        result = self.serve.parse_assets(rows)
+        self.assertEqual(result['h']['total_assets'], 200000000)
+        self.assertEqual(result['h']['snapshot_date'], '2026-02')
 
 if __name__ == '__main__':
     unittest.main()
