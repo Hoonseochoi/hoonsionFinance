@@ -74,6 +74,23 @@ def parse_assets(rows):
     return result
 
 
+def parse_assets_history(rows):
+    """모든 스냅샷 반환 (날짜순 정렬). 자산 추이 차트용."""
+    history = []
+    for r in rows:
+        try:
+            history.append({
+                'snapshot_date': r['snapshot_date'],
+                'person': r['person'],
+                'net_assets': int(float(r['net_assets'])),
+                'total_assets': int(float(r['total_assets'])),
+                'total_liabilities': int(float(r['total_liabilities'])),
+            })
+        except (ValueError, TypeError):
+            continue
+    return sorted(history, key=lambda x: x['snapshot_date'])
+
+
 def parse_overrides(rows):
     """CSV 행 리스트 → {tx_id: override_dict} 딕셔너리."""
     result = {}
@@ -81,6 +98,7 @@ def parse_overrides(rows):
         result[r['id']] = {
             'cat': r.get('cat', ''),
             'desc': r.get('desc', ''),
+            'amount': r.get('amount', ''),   # 신규
             'deleted': r.get('deleted', 'false').lower() == 'true',
         }
     return result
@@ -97,6 +115,12 @@ def apply_overrides(transactions, overrides):
         if ov:
             if ov['cat']:  tx['cat']  = ov['cat']
             if ov['desc']: tx['desc'] = ov['desc']
+            if ov.get('amount'):
+                try:
+                    tx['_orig_amount'] = tx['amount']
+                    tx['amount'] = int(float(ov['amount']))
+                except (ValueError, TypeError):
+                    pass
         result.append(tx)
     return result
 
@@ -157,6 +181,90 @@ def compute_combined(h_assets, w_assets):
     }
 
 
+def get_ai_insights(month, spending_data, income, expense):
+    """Claude API로 지출 성향 분석 인사이트 생성."""
+    import urllib.request, urllib.error, re
+
+    # API 키: 환경변수 우선, 없으면 config.json
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+        if os.path.exists(cfg_path):
+            try:
+                with open(cfg_path, encoding='utf-8') as f:
+                    cfg = json.load(f)
+                api_key = cfg.get('ANTHROPIC_API_KEY', '')
+            except Exception:
+                pass
+
+    if not api_key:
+        return {'error': 'API_KEY_MISSING'}
+
+    save_rate = round((income - abs(expense)) / income * 100) if income > 0 else 0
+    cat_lines = '\n'.join([
+        f"- {cat}: {int(v['total']):,}원 (훈서 {int(v.get('h',0)):,} / 시온 {int(v.get('w',0)):,})"
+        for cat, v in sorted(spending_data.items(), key=lambda x: -x[1]['total'])
+    ])
+
+    prompt = f"""한국 맞벌이 부부(훈서, 시온)의 {month} 가계 지출 데이터입니다.
+
+수입: {income:,}원 | 지출: {abs(expense):,}원 | 저축률: {save_rate}%
+
+카테고리별 지출:
+{cat_lines}
+
+위 데이터를 분석해서 아래 JSON을 반드시 한국어로만 반환하세요 (코드블록 없이 순수 JSON만):
+{{
+  "summary": "이달 가계 한 줄 핵심 요약 (구체적 수치 포함)",
+  "patterns": [
+    "주목할 지출 패턴 1 (긍정적 또는 부정적, 구체적 금액 포함)",
+    "주목할 지출 패턴 2",
+    "주목할 지출 패턴 3"
+  ],
+  "tips": [
+    "다음 달 절약 팁 1 (구체적)",
+    "다음 달 절약 팁 2 (구체적)"
+  ],
+  "score": {{
+    "value": 3,
+    "reason": "가계 건전성 점수 (1-5) 이유"
+  }},
+  "alert": "특이사항 또는 주의사항 (없으면 빈 문자열)"
+}}"""
+
+    payload = json.dumps({
+        'model': 'claude-3-5-haiku-20241022',
+        'max_tokens': 1000,
+        'messages': [{'role': 'user', 'content': prompt}]
+    }).encode()
+
+    req = urllib.request.Request(
+        'https://api.anthropic.com/v1/messages',
+        data=payload,
+        headers={
+            'x-api-key': api_key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+        },
+        method='POST'
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read())
+            text = result['content'][0]['text'].strip()
+            json_match = re.search(r'\{.*\}', text, re.DOTALL)
+            if json_match:
+                return json.loads(json_match.group())
+            return {'error': 'PARSE_ERROR', 'raw': text[:200]}
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()[:300]
+        logging.error('AI insights HTTP error: %s %s', e.code, body)
+        return {'error': f'HTTP_{e.code}', 'detail': body}
+    except Exception as e:
+        logging.error('AI insights error: %s', e)
+        return {'error': str(e)}
+
+
 def build_api_data():
     """전체 /api/data JSON 페이로드 빌드."""
     tx_rows    = read_csv(TX_PATH)
@@ -165,6 +273,7 @@ def build_api_data():
 
     transactions = parse_transactions(tx_rows)
     assets_by_person = parse_assets(asset_rows)
+    asset_history = parse_assets_history(asset_rows)
     overrides = parse_overrides(ov_rows)
 
     h_assets = assets_by_person.get('h', {
@@ -192,6 +301,25 @@ def build_api_data():
         else:
             ov_dict[tid] = {'cat': ov['cat'], 'desc': ov['desc']}
 
+    from collections import defaultdict as _dd
+    _by_date = _dd(dict)
+    for r in asset_history:
+        _by_date[r['snapshot_date']][r['person']] = r
+    assets_timeline = [
+        {
+            'date': date,
+            'h_net': _by_date[date].get('h', {}).get('net_assets', 0),
+            'h_total': _by_date[date].get('h', {}).get('total_assets', 0),
+            'w_net': _by_date[date].get('w', {}).get('net_assets', 0),
+            'w_total': _by_date[date].get('w', {}).get('total_assets', 0),
+            'combined_net': (
+                _by_date[date].get('h', {}).get('net_assets', 0) +
+                _by_date[date].get('w', {}).get('net_assets', 0)
+            ),
+        }
+        for date in sorted(_by_date.keys())
+    ]
+
     return {
         'transactions': clean_txs,
         'h_assets': h_assets,
@@ -204,6 +332,7 @@ def build_api_data():
         'cat_summary': cat_summary,
         'all_cats': all_cats,
         'overrides': ov_dict,
+        'assets_timeline': assets_timeline,
         'meta': {
             'last_updated': datetime.now().isoformat(timespec='seconds'),
             'tx_count': {
@@ -275,18 +404,19 @@ def _write_overrides(ov_dict):
     """overrides.csv 전체 재작성."""
     with open(OV_PATH, 'w', encoding='utf-8', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['id', 'cat', 'desc', 'deleted', 'updated_at'])
+        w.writerow(['id', 'cat', 'desc', 'amount', 'deleted', 'updated_at'])
         for tid, ov in ov_dict.items():
             w.writerow([
                 tid,
                 ov.get('cat', ''),
                 ov.get('desc', ''),
+                ov.get('amount', ''),
                 'true' if ov.get('deleted') else 'false',
                 datetime.now().isoformat(timespec='seconds'),
             ])
 
 
-def save_override(tx_id, cat, desc):
+def save_override(tx_id, cat, desc, amount=None):
     """단건 수정 저장."""
     rows = read_csv(OV_PATH)
     ov_dict = parse_overrides(rows)
@@ -294,6 +424,7 @@ def save_override(tx_id, cat, desc):
     ov_dict[tx_id] = {
         'cat':  cat  if cat  is not None else existing.get('cat', ''),
         'desc': desc if desc is not None else existing.get('desc', ''),
+        'amount': str(int(float(amount))) if amount is not None else existing.get('amount', ''),
         'deleted': existing.get('deleted', False),
     }
     _write_overrides(ov_dict)
@@ -307,17 +438,18 @@ def save_delete(tx_id):
     _write_overrides(ov_dict)
 
 
-def save_bulk_override(tx_ids, cat, desc):
-    """일괄 수정 저장. cat/desc 중 None은 기존값 유지."""
-    if cat is None and desc is None:
-        return  # no-op
+def save_bulk_override(tx_ids, cat, desc, amount=None):
+    """일괄 수정 저장. cat/desc/amount 중 None은 기존값 유지."""
+    if cat is None and desc is None and amount is None:
+        return
     rows = read_csv(OV_PATH)
     ov_dict = parse_overrides(rows)
     for tid in tx_ids:
         existing = ov_dict.get(tid, {})
         ov_dict[tid] = {
-            'cat':  cat  if cat  is not None else existing.get('cat', ''),
-            'desc': desc if desc is not None else existing.get('desc', ''),
+            'cat':    cat    if cat    is not None else existing.get('cat', ''),
+            'desc':   desc   if desc   is not None else existing.get('desc', ''),
+            'amount': str(int(float(amount))) if amount is not None else existing.get('amount', ''),
             'deleted': existing.get('deleted', False),
         }
     _write_overrides(ov_dict)
@@ -388,13 +520,13 @@ class Handler(BaseHTTPRequestHandler):
 
         try:
             if self.path == '/api/override':
-                save_override(body['id'], body.get('cat'), body.get('desc'))
+                save_override(body['id'], body.get('cat'), body.get('desc'), body.get('amount'))
                 self._json({'ok': True})
             elif self.path == '/api/delete':
                 save_delete(body['id'])
                 self._json({'ok': True})
             elif self.path == '/api/bulk-override':
-                save_bulk_override(body['ids'], body.get('cat'), body.get('desc'))
+                save_bulk_override(body['ids'], body.get('cat'), body.get('desc'), body.get('amount'))
                 self._json({'ok': True})
             elif self.path == '/api/update-asset':
                 ok = update_asset(
@@ -402,6 +534,13 @@ class Handler(BaseHTTPRequestHandler):
                     body.get('index', -1), body.get('data', {})
                 )
                 self._json({'ok': ok})
+            elif self.path == '/api/ai-insights':
+                month = body.get('month', '')
+                spending = body.get('spending', {})
+                income = body.get('income', 0)
+                expense = body.get('expense', 0)
+                result = get_ai_insights(month, spending, income, expense)
+                self._json(result)
             else:
                 self._json({'error': 'not found'}, 404)
         except KeyError as e:

@@ -210,6 +210,27 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 /* scrollbar */
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── AI INSIGHTS ── */
+.ai-section{margin-top:14px;}
+.ai-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.ai-btn:hover{opacity:.85;}
+.ai-btn:disabled{opacity:.5;cursor:not-allowed;}
+.ai-spinner{display:none;text-align:center;padding:20px;color:var(--muted);font-size:12px;}
+.ai-spinner.show{display:block;}
+.ai-result{display:none;margin-top:12px;}
+.ai-result.show{display:block;}
+.ai-summary-box{background:var(--navy);color:#fff;border-radius:10px;padding:14px 16px;font-size:13px;font-weight:600;margin-bottom:10px;line-height:1.5;}
+.ai-score-badge{display:inline-block;background:rgba(255,255,255,.15);border-radius:6px;padding:2px 8px;font-size:11px;margin-left:8px;}
+.ai-list-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:10px 0 5px;}
+.ai-list{padding:0;margin:0;}
+.ai-list li{font-size:12px;color:var(--navy2);line-height:1.7;list-style:none;padding-left:14px;position:relative;}
+.ai-list li::before{content:'•';position:absolute;left:0;color:var(--blue);}
+.ai-alert-box{background:#FFF7E8;border:1px solid #E0BC60;border-radius:8px;padding:10px 13px;font-size:12px;color:var(--amber);margin-top:8px;line-height:1.6;}
+.ai-err-box{background:#FFF0EE;border:1px solid #F0A8A0;border-radius:8px;padding:13px 15px;font-size:12px;color:var(--coral);line-height:1.7;}
+/* ── AG ASSET ROW ── */
+.ag-row3{margin-bottom:14px;}
+.ag-row-asset{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;}
 </style>
 </head>
 <body>
@@ -278,7 +299,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 
   <div class="g3">
     <div class="card">
-      <div class="ch"><span class="ct">지출 카테고리</span><span class="cs">연간 합산</span></div>
+      <div class="ch"><span class="ct" id="cat-bars-title">지출 카테고리</span><span class="cs" id="cat-bars-sub">로딩 중...</span></div>
       <div id="cat-bars"></div>
     </div>
     <div class="card">
@@ -322,6 +343,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
     </div>
   </div>
   <div class="g3" id="ins-fun-cards"></div>
+
+  <div class="ai-section card">
+    <div class="ch">
+      <span class="ct">🤖 Claude AI 분석</span>
+      <span class="cs" id="ai-month-label"></span>
+    </div>
+    <button class="ai-btn" id="ai-gen-btn" onclick="generateAiInsights()">🤖 이달 가계 AI 분석 생성</button>
+    <div class="ai-spinner" id="ai-spinner">Claude가 분석 중입니다... ⏳</div>
+    <div class="ai-result" id="ai-result"></div>
+  </div>
 </div><!-- /page-1 -->
 
 <!-- ════════ PAGE 2: ASSET GRAPH ════════ -->
@@ -379,6 +410,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
     <div class="ch"><span class="ct">자산 성분 분석</span><span class="cs">현재 스냅샷 기준</span></div>
     <div style="height:130px"><canvas id="assetStackChart"></canvas></div>
   </div>
+
+  <div class="ag-row-asset">
+    <div class="card">
+      <div class="ch"><span class="ct">훈서 총자산 추이</span><span class="cs">월별 스냅샷</span></div>
+      <div style="height:150px"><canvas id="hAssetChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">시온 총자산 추이</span><span class="cs">월별 스냅샷</span></div>
+      <div style="height:150px"><canvas id="wAssetChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">합계 순자산 추이</span><span class="cs">부부 합산</span></div>
+      <div style="height:150px"><canvas id="combinedAssetChart"></canvas></div>
+    </div>
+  </div>
 </div><!-- /page-2 -->
 
 </div><!-- /pages -->
@@ -410,6 +456,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
     <div class="eb-field">
       <div class="eb-label">카테고리</div>
       <select class="eb-select" id="edit-cat"></select>
+    </div>
+    <div class="eb-field">
+      <div class="eb-label">수정 금액 (원, 절댓값 입력)</div>
+      <input class="eb-input" id="edit-amount" type="number" min="0" placeholder="금액 입력 (변경 시에만)">
     </div>
     <div class="eb-field" style="font-size:11px;color:var(--muted);background:var(--bg);padding:10px 12px;border-radius:8px;line-height:1.6;">
       <strong style="color:var(--navy);">원금액:</strong> <span id="edit-info"></span>
@@ -449,6 +499,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 //  DATA & STORAGE
 // ═══════════════════════
 let RAW = null;
+let aiCache = {}; // { 'YYYY-MM': aiInsightResult }
 
 let CATS;
 const CAT_COLORS = {
@@ -463,7 +514,18 @@ let OVERRIDES = {}; // populated from RAW.overrides after loadData()
 // localStorage is no longer used — overrides are persisted to db/overrides.csv via API
 function getTx(t) {
   const ov = OVERRIDES[t.id];
-  return ov ? {...t, cat: ov.cat||t.cat, desc: ov.desc||t.desc, _deleted: ov.deleted||false} : {...t, _deleted:false};
+  if (ov) {
+    const amtOv = ov.amount !== undefined && ov.amount !== '' && ov.amount !== null;
+    return {
+      ...t,
+      cat: ov.cat||t.cat,
+      desc: ov.desc||t.desc,
+      _deleted: ov.deleted||false,
+      amount: amtOv ? (t.amount < 0 ? -Math.abs(ov.amount) : Math.abs(ov.amount)) : t.amount,
+      _orig_amount: amtOv ? t.amount : undefined,
+    };
+  }
+  return {...t, _deleted:false};
 }
 function visibleTx() { return RAW.transactions.map(getTx).filter(t => !t._deleted); }
 
@@ -575,15 +637,8 @@ function initDashboard() {
       <span style="margin-left:auto;font-weight:700;color:var(--navy);">${fmt(d.v)}</span>
     </div>`).join('');
 
-  // Cat bars
-  const topCats=Object.entries(RAW.cat_summary).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
-  const maxC=topCats[0][1].total;
-  document.getElementById('cat-bars').innerHTML=topCats.map(([cat,v])=>`
-    <div class="hbar" onclick="openModal('cat_${encodeURIComponent(cat)}','${cat}')">
-      <div class="hbn">${cat}</div>
-      <div class="hbt"><div class="hbf" style="width:${Math.round(v.total/maxC*100)}%;background:${CAT_COLORS[cat]||'#888'};"></div></div>
-      <div class="hba">${fmt(v.total)}</div>
-    </div>`).join('');
+  // Cat bars — 월별 (renderCatBars로 분리)
+  renderCatBars();
 
   // Inv list
   const allInv=[...h.investments.map(i=>({...i,person:'h'})),...w.investments.map(i=>({...i,person:'w'}))].sort((a,b)=>b.value-a.value);
@@ -621,6 +676,34 @@ function renderDashboardTopSection() {
       <span style="font-size:11px;font-weight:700;color:var(--coral);flex-shrink:0;">${fmt(Math.abs(t.amount))}</span>
     </div>`).join('')
   : '<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px;">해당 월 지출 내역 없음</div>';
+  renderCatBars();
+}
+
+function renderCatBars() {
+  const mExp = visibleTx().filter(t => t.month === _selectedMonth && t.type === '지출');
+  const catMap = {};
+  mExp.forEach(t => {
+    if (!catMap[t.cat]) catMap[t.cat] = 0;
+    catMap[t.cat] += Math.abs(t.amount);
+  });
+  const topCats = Object.entries(catMap).sort((a,b) => b[1]-a[1]).slice(0,10);
+  const ml = _selectedMonth.replace('20','').replace('-','/');
+  const titleEl = document.getElementById('cat-bars-title');
+  const subEl   = document.getElementById('cat-bars-sub');
+  if (titleEl) titleEl.textContent = '지출 카테고리 (' + ml + '월)';
+  if (subEl)   subEl.textContent   = ml + '월 기준';
+  if (!topCats.length) {
+    document.getElementById('cat-bars').innerHTML =
+      '<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px;">해당 월 지출 없음</div>';
+    return;
+  }
+  const maxC = topCats[0][1];
+  document.getElementById('cat-bars').innerHTML = topCats.map(([cat,v]) => `
+    <div class="hbar" onclick="openModal('cat_${encodeURIComponent(cat)}','${cat}')">
+      <div class="hbn">${cat}</div>
+      <div class="hbt"><div class="hbf" style="width:${Math.round(v/maxC*100)}%;background:${CAT_COLORS[cat]||'#888'};"></div></div>
+      <div class="hba">${fmt(v)}</div>
+    </div>`).join('');
 }
 
 // 고정비/이체성 카테고리 — 인사이트 분석에서 제외
@@ -871,6 +954,114 @@ function initInsights() {
     <div class="fun-card"><div class="fc-lbl">이달 저축률</div><div class="fc-val">${saveRate}%</div><div class="fc-desc">3개월 평균 ${avgSaveRate}% 대비 ${saveTrendTxt}</div></div>
     <div class="fun-card"><div class="fc-lbl">신용점수 🏆</div><div class="fc-val">훈 ${hCredit} · 시 ${wCredit}</div><div class="fc-desc">부부 합산 ${hCredit+wCredit}점${wCredit===1000?' · 시온 만점!':''}</div></div>
     <div class="fun-card"><div class="fc-lbl">데이터 기간</div><div class="fc-val">${firstM.slice(2).replace('-','/')} ~ ${lastM.slice(2).replace('-','/')}</div><div class="fc-desc">총 ${RAW.monthly.length}개월 · ${((RAW.meta?.tx_count?.h||0)+(RAW.meta?.tx_count?.w||0)).toLocaleString()}건 분석</div></div>`;
+  initAiSection(_selectedMonth);
+}
+
+// ═══════════════════════
+//  AI INSIGHTS
+// ═══════════════════════
+function initAiSection(month) {
+  const ml = month.replace('20','').replace('-','/');
+  const lbl = document.getElementById('ai-month-label');
+  if (lbl) lbl.textContent = ml + '월';
+  const btn = document.getElementById('ai-gen-btn');
+  const resultEl = document.getElementById('ai-result');
+  const spinnerEl = document.getElementById('ai-spinner');
+  if (!btn) return;
+  spinnerEl.classList.remove('show');
+  resultEl.classList.remove('show');
+  resultEl.innerHTML = '';
+  if (aiCache[month]) {
+    renderAiResult(aiCache[month]);
+  } else {
+    btn.disabled = false;
+    btn.textContent = '🤖 이달 가계 AI 분석 생성';
+  }
+}
+
+async function generateAiInsights() {
+  const month = _selectedMonth;
+  const btn = document.getElementById('ai-gen-btn');
+  const spinnerEl = document.getElementById('ai-spinner');
+  const resultEl = document.getElementById('ai-result');
+  btn.disabled = true;
+  btn.textContent = '분석 중...';
+  spinnerEl.classList.add('show');
+  resultEl.classList.remove('show');
+
+  // 해당 월 지출 데이터 집계 (서버에 전송)
+  const isExcl = t => FIXED_CATS.has(t.cat) || EXCLUDE_DESCS.some(d => t.desc.includes(d));
+  const mTxs = visibleTx().filter(t => t.month === month);
+  const mExp = mTxs.filter(t => t.type === '지출' && !isExcl(t));
+  const mInc = mTxs.filter(t => t.type === '수입');
+  const spendingMap = {};
+  mExp.forEach(t => {
+    if (!spendingMap[t.cat]) spendingMap[t.cat] = {total:0, h:0, w:0};
+    spendingMap[t.cat].total += Math.abs(t.amount);
+    spendingMap[t.cat][t.person] += Math.abs(t.amount);
+  });
+  const mData = RAW.monthly.find(x => x.month === month) || {total_income:0, total_expense:0};
+
+  try {
+    const r = await fetch('/api/ai-insights', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        month,
+        spending: spendingMap,
+        income: mData.total_income,
+        expense: mData.total_expense
+      })
+    });
+    const data = await r.json();
+    if (data.error === 'API_KEY_MISSING') {
+      resultEl.innerHTML = `<div class="ai-err-box">
+        ⚠️ Anthropic API 키가 설정되지 않았습니다.<br>
+        프로젝트 루트에 <code>config.json</code> 파일을 생성하고 아래 내용을 입력하세요:<br><br>
+        <code>{"ANTHROPIC_API_KEY": "sk-ant-..."}</code>
+      </div>`;
+      resultEl.classList.add('show');
+      spinnerEl.classList.remove('show');
+      btn.disabled = false;
+      btn.textContent = '🤖 이달 가계 AI 분석 생성';
+      return;
+    }
+    aiCache[month] = data;
+    renderAiResult(data);
+  } catch(e) {
+    resultEl.innerHTML = `<div class="ai-err-box">⚠️ 오류: ${e.message}</div>`;
+    resultEl.classList.add('show');
+    spinnerEl.classList.remove('show');
+    btn.disabled = false;
+    btn.textContent = '🤖 이달 가계 AI 분석 생성';
+  }
+}
+
+function renderAiResult(data) {
+  const btn = document.getElementById('ai-gen-btn');
+  const spinnerEl = document.getElementById('ai-spinner');
+  const resultEl = document.getElementById('ai-result');
+  spinnerEl.classList.remove('show');
+  if (btn) { btn.disabled = false; btn.textContent = '🔄 재분석'; }
+
+  const score = data.score?.value ?? data.score ?? '';
+  const reason = data.score?.reason || '';
+  const patternsHtml = (data.patterns||[]).map(p=>`<li>${p}</li>`).join('');
+  const tipsHtml     = (data.tips||[]).map(t=>`<li>${t}</li>`).join('');
+  const alertHtml    = data.alert
+    ? `<div class="ai-alert-box">⚠️ ${data.alert}</div>` : '';
+
+  resultEl.innerHTML = `
+    <div class="ai-summary-box">
+      ${data.summary||'분석 결과 없음'}
+      ${score ? `<span class="ai-score-badge">건전성 ${score}/5</span>` : ''}
+    </div>
+    ${reason ? `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">${reason}</div>` : ''}
+    ${patternsHtml ? `<div class="ai-list-title">지출 패턴 분석</div><ul class="ai-list">${patternsHtml}</ul>` : ''}
+    ${tipsHtml     ? `<div class="ai-list-title">절약 팁</div><ul class="ai-list">${tipsHtml}</ul>`     : ''}
+    ${alertHtml}
+  `;
+  resultEl.classList.add('show');
 }
 
 function initAssetGraphPage() {
@@ -958,6 +1149,48 @@ function initAssetGraphPage() {
       plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:8}},
         tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)+'원'}}}}
   });
+
+  // ── 자산 추이 차트 (월별 스냅샷) ──
+  const tl = RAW.assets_timeline || [];
+  if (tl.length > 0) {
+    const tlLabels = tl.map(p => (p.date||'').replace('20','').replace('-','/'));
+    const ptR = tl.length === 1 ? 7 : 3;
+    const ptH = tl.length === 1 ? 9 : 5;
+    const lineOpts = (color) => ({
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)+'원'}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9},color:'#8090A8'}},
+        y:{grid:{color:'#F0EDE8'},ticks:{font:{size:9},color:'#8090A8',callback:v=>fmt(v)}}
+      }
+    });
+    new Chart(document.getElementById('hAssetChart').getContext('2d'),{
+      type:'line',
+      data:{labels:tlLabels,datasets:[{label:'훈서 총자산',data:tl.map(p=>p.h_total),
+        borderColor:'#1A46A0',backgroundColor:'rgba(26,70,160,.08)',fill:true,tension:.3,
+        pointRadius:ptR,pointHoverRadius:ptH,pointBackgroundColor:'#1A46A0'}]},
+      options:lineOpts('#1A46A0')
+    });
+    new Chart(document.getElementById('wAssetChart').getContext('2d'),{
+      type:'line',
+      data:{labels:tlLabels,datasets:[{label:'시온 총자산',data:tl.map(p=>p.w_total),
+        borderColor:'#C84830',backgroundColor:'rgba(200,72,48,.08)',fill:true,tension:.3,
+        pointRadius:ptR,pointHoverRadius:ptH,pointBackgroundColor:'#C84830'}]},
+      options:lineOpts('#C84830')
+    });
+    new Chart(document.getElementById('combinedAssetChart').getContext('2d'),{
+      type:'line',
+      data:{labels:tlLabels,datasets:[{label:'합계 순자산',data:tl.map(p=>p.combined_net),
+        borderColor:'#1A6858',backgroundColor:'rgba(26,104,88,.08)',fill:true,tension:.3,
+        pointRadius:ptR,pointHoverRadius:ptH,pointBackgroundColor:'#1A6858'}]},
+      options:lineOpts('#1A6858')
+    });
+  } else {
+    ['hAssetChart','wAssetChart','combinedAssetChart'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.insertAdjacentHTML('afterend','<div style="text-align:center;padding:20px;font-size:11px;color:var(--muted);">스냅샷 데이터 없음</div>');
+    });
+  }
 }
 
 // ═══════════════════════
@@ -1164,7 +1397,11 @@ function renderTxList(el, txs) {
         <div class="tx-method">${t.method||''}</div>
       </div>
       <span class="tx-ctag ${modified?'mod':''}" onclick="openEditModal('${t.id}')">${t.cat}${modified?' ✏️':''}</span>
-      <div class="tx-amt ${isExp?'exp':'inc'}">${isExp?'-':'+'}${fmt(Math.abs(t.amount))}</div>
+      <div class="tx-amt ${isExp?'exp':'inc'}">${
+        t._orig_amount !== undefined
+          ? `<span style="text-decoration:line-through;font-size:10px;opacity:.55;">${isExp?'-':'+'}${fmt(Math.abs(t._orig_amount))}</span> ${isExp?'-':'+'}${fmt(Math.abs(t.amount))}`
+          : `${isExp?'-':'+'}${fmt(Math.abs(t.amount))}`
+      }</div>
       <div class="tx-actions">
         <button class="tx-act-btn edit" onclick="openEditModal('${t.id}')" title="수정">✏</button>
         <button class="tx-act-btn del" onclick="quickDelete('${t.id}')" title="삭제">✕</button>
@@ -1201,7 +1438,8 @@ function openEditModal(txId) {
   sel.innerHTML = CATS.map(c=>`<option value="${c}" ${c===cur.cat?'selected':''}>${c}</option>`).join('');
 
   document.getElementById('edit-desc').value = cur.desc;
-  document.getElementById('edit-info').textContent = `${cur.date} · ${fmt(Math.abs(cur.amount))}원 · ${cur.method}`;
+  document.getElementById('edit-amount').value = '';
+  document.getElementById('edit-info').textContent = `${cur.date} · 원본 ${fmt(Math.abs(tx.amount))}원${cur._orig_amount !== undefined ? ' → 수정 '+fmt(Math.abs(cur.amount))+'원' : ''} · ${cur.method}`;
 
   document.getElementById('editModal').classList.add('open');
 }
@@ -1280,13 +1518,16 @@ function submitEdit() {
   if (!_editId) return;
   const newDesc = document.getElementById('edit-desc').value.trim();
   const newCat  = document.getElementById('edit-cat').value;
+  const amtRaw  = document.getElementById('edit-amount').value.trim();
+  const newAmount = amtRaw !== '' ? (parseInt(amtRaw) || 0) : null;
   const tx = RAW.transactions.find(t=>t.id===_editId);
   if (!tx) { closeEdit(); return; }
 
   const cur = getTx(tx);
-  const descChanged = newDesc !== cur.desc;
-  const catChanged  = newCat  !== cur.cat;
-  if (!descChanged && !catChanged) { closeEdit(); return; }
+  const descChanged   = newDesc !== cur.desc;
+  const catChanged    = newCat  !== cur.cat;
+  const amountChanged = newAmount !== null && newAmount !== Math.abs(cur.amount);
+  if (!descChanged && !catChanged && !amountChanged) { closeEdit(); return; }
 
   const sameDesc = RAW.transactions.filter(t=>t.desc===tx.desc);
   const sameCat  = RAW.transactions.filter(t=>t.cat===tx.cat&&t.type===tx.type);
@@ -1295,46 +1536,45 @@ function submitEdit() {
 
   // Build confirm options
   const opts = [];
+  const finalAmt = amountChanged ? newAmount : null;
 
-  if (descChanged && catChanged) {
-    opts.push({ label: `이 내역만 수정 (1건)`, action: ()=>applyEdit([tx.id], newDesc, newCat) });
-    if (sameDesc.length>1) opts.push({ label: `같은 이름 "${cur.desc}" 전체 수정 (${sameDesc.length}건)`, primary:true, action:()=>applyEdit(sameDesc.map(t=>t.id), newDesc, newCat) });
-    if (catChanged && sameCat.length>1) opts.push({ label: `"${cur.cat}" 카테고리 전체 → "${newCat}" (${sameCat.length}건)`, action:()=>applyEdit(sameCat.map(t=>t.id), null, newCat) });
-  } else if (catChanged) {
-    opts.push({ label: `이 내역만 카테고리 변경`, action: ()=>applyEdit([tx.id], null, newCat) });
-    if (sameCat.length>1) opts.push({ label: `"${cur.cat}" 카테고리 전체 → "${newCat}" (${sameCat.length}건)`, primary:true, action:()=>applyEdit(sameCat.map(t=>t.id), null, newCat) });
-  } else if (descChanged) {
-    opts.push({ label: `이 내역만 이름 변경`, action: ()=>applyEdit([tx.id], newDesc, null) });
-    if (sameDesc.length>1) opts.push({ label: `같은 이름 전체 변경 (${sameDesc.length}건)`, primary:true, action:()=>applyEdit(sameDesc.map(t=>t.id), newDesc, null) });
+  if (descChanged || catChanged || amountChanged) {
+    const d = amountChanged ? newDesc : newDesc;
+    const c = amountChanged ? newCat  : newCat;
+    opts.push({ label: `이 내역만 수정 (1건)`, action: ()=>applyEdit([tx.id], newDesc, newCat, finalAmt) });
+    if (!amountChanged && sameDesc.length>1) opts.push({ label: `같은 이름 "${cur.desc}" 전체 수정 (${sameDesc.length}건)`, primary:true, action:()=>applyEdit(sameDesc.map(t=>t.id), newDesc, newCat, null) });
+    if (!amountChanged && catChanged && sameCat.length>1) opts.push({ label: `"${cur.cat}" 카테고리 전체 → "${newCat}" (${sameCat.length}건)`, action:()=>applyEdit(sameCat.map(t=>t.id), null, newCat, null) });
   }
 
   opts.push({ label: '취소', action: ()=>{} });
   showConfirm('어떻게 적용할까요?', `수정 내용: ${descChanged?'이름 "'+newDesc+'"':''}${descChanged&&catChanged?' / ':''}${catChanged?'카테고리 "'+newCat+'"':''}`, opts);
 }
 
-async function applyEdit(ids, newDesc, newCat) {
+async function applyEdit(ids, newDesc, newCat, newAmount) {
   try {
     if (ids.length === 1) {
       const response = await fetch('/api/override', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: ids[0], cat: newCat, desc: newDesc})
+        body: JSON.stringify({id: ids[0], cat: newCat, desc: newDesc, amount: newAmount})
       });
       if (!response.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
       if (!OVERRIDES[ids[0]]) OVERRIDES[ids[0]] = {};
-      if (newDesc !== null) OVERRIDES[ids[0]].desc = newDesc;
-      if (newCat  !== null) OVERRIDES[ids[0]].cat  = newCat;
+      if (newDesc   !== null) OVERRIDES[ids[0]].desc   = newDesc;
+      if (newCat    !== null) OVERRIDES[ids[0]].cat    = newCat;
+      if (newAmount !== null) OVERRIDES[ids[0]].amount = newAmount;
     } else {
       const response = await fetch('/api/bulk-override', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ids, cat: newCat, desc: newDesc})
+        body: JSON.stringify({ids, cat: newCat, desc: newDesc, amount: newAmount})
       });
       if (!response.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
       ids.forEach(id => {
         if (!OVERRIDES[id]) OVERRIDES[id] = {};
-        if (newDesc !== null) OVERRIDES[id].desc = newDesc;
-        if (newCat  !== null) OVERRIDES[id].cat  = newCat;
+        if (newDesc   !== null) OVERRIDES[id].desc   = newDesc;
+        if (newCat    !== null) OVERRIDES[id].cat    = newCat;
+        if (newAmount !== null) OVERRIDES[id].amount = newAmount;
       });
     }
   } catch (e) {
