@@ -322,9 +322,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
   <div class="ins-hero" id="ins-hero">
     <div class="ih-l">
       <div class="ih-title">가계 인사이트 리포트</div>
-      <div style="margin-top:8px;">
-        <select id="ins-month-select" onchange="onInsMonthChange()" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:5px 10px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;outline:none;"></select>
-      </div>
+      <div class="ih-sub" id="ins-period"></div>
     </div>
     <div class="ih-stats">
       <div><div class="ih-sl">이달 수입</div><div class="ih-sv" id="ih-income"></div><div class="ih-ss" id="ih-income-sub"></div></div>
@@ -559,7 +557,6 @@ function switchPage(idx) {
 //  INIT
 // ═══════════════════════
 let _selectedMonth = '';
-let _insMonth = '';
 
 async function loadData() {
   try {
@@ -581,14 +578,9 @@ async function loadData() {
   // 월 드롭다운 초기화
   const months = RAW.monthly.map(m => m.month);
   _selectedMonth = months[months.length - 1];
-  _insMonth = _selectedMonth;
   const sel = document.getElementById('month-select');
   sel.innerHTML = months.slice().reverse().map(m =>
     `<option value="${m}" ${m===_selectedMonth?'selected':''}>${m.replace('20','').replace('-','/')}월</option>`
-  ).join('');
-  const insSel = document.getElementById('ins-month-select');
-  insSel.innerHTML = months.slice().reverse().map(m =>
-    `<option value="${m}" ${m===_insMonth?'selected':''}>${m.replace('20','').replace('-','/')}월</option>`
   ).join('');
   initDashboard();
   initInsights();
@@ -598,10 +590,7 @@ function onMonthChange() {
   renderDashboardTopSection();
   initInsights();
 }
-function onInsMonthChange() {
-  _insMonth = document.getElementById('ins-month-select').value;
-  initInsights();
-}
+
 window.addEventListener('DOMContentLoaded', loadData);
 
 function initDashboard() {
@@ -724,7 +713,7 @@ const FIXED_CATS = new Set(['금융','이체','보험']);
 const EXCLUDE_DESCS = ['85690900'];
 
 function initInsights() {
-  const m = _insMonth || _selectedMonth;
+  const m = _selectedMonth;
   const mIdx = RAW.monthly.findIndex(x => x.month === m);
   const mData = RAW.monthly[mIdx] || {total_income:0, total_expense:0};
   const prevData = mIdx > 0 ? RAW.monthly[mIdx-1] : null;
@@ -736,7 +725,7 @@ function initInsights() {
   const mInc = mTxs.filter(t => t.type === '수입');
 
   // 히어로 업데이트
-  // ins-period 텍스트 대신 ins-month-select 드롭다운 사용
+  document.getElementById('ins-period').textContent = m.replace('20','').replace('-','/') + '월 거래 데이터 기반';
   const income = mData.total_income;
   const expense = Math.abs(mData.total_expense);
   const net = income - expense;
@@ -966,7 +955,7 @@ function initInsights() {
     <div class="fun-card"><div class="fc-lbl">이달 저축률</div><div class="fc-val">${saveRate}%</div><div class="fc-desc">3개월 평균 ${avgSaveRate}% 대비 ${saveTrendTxt}</div></div>
     <div class="fun-card"><div class="fc-lbl">신용점수 🏆</div><div class="fc-val">훈 ${hCredit} · 시 ${wCredit}</div><div class="fc-desc">부부 합산 ${hCredit+wCredit}점${wCredit===1000?' · 시온 만점!':''}</div></div>
     <div class="fun-card"><div class="fc-lbl">데이터 기간</div><div class="fc-val">${firstM.slice(2).replace('-','/')} ~ ${lastM.slice(2).replace('-','/')}</div><div class="fc-desc">총 ${RAW.monthly.length}개월 · ${((RAW.meta?.tx_count?.h||0)+(RAW.meta?.tx_count?.w||0)).toLocaleString()}건 분석</div></div>`;
-  initAiSection(_insMonth || _selectedMonth);
+  initAiSection(_selectedMonth);
 }
 
 // ═══════════════════════
@@ -992,7 +981,7 @@ function initAiSection(month) {
 }
 
 async function generateAiInsights() {
-  const month = _insMonth || _selectedMonth;
+  const month = _selectedMonth;
   const btn = document.getElementById('ai-gen-btn');
   const spinnerEl = document.getElementById('ai-spinner');
   const resultEl = document.getElementById('ai-result');
