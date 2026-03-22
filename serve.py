@@ -214,6 +214,63 @@ def build_api_data():
     }
 
 
+def update_asset(person, asset_type, action, index, data):
+    """자산 항목 업데이트. asset_type: investment|loan|pension, action: update|delete"""
+    rows = read_csv(ASSETS_PATH)
+    if not rows:
+        return False
+
+    # person의 최신 snapshot row 인덱스 찾기
+    latest_idx = None
+    latest_date = ''
+    for i, r in enumerate(rows):
+        if r['person'] == person and r['snapshot_date'] >= latest_date:
+            latest_date = r['snapshot_date']
+            latest_idx = i
+
+    if latest_idx is None:
+        return False
+
+    fields = ['snapshot_date', 'person', 'total_assets', 'total_liabilities',
+              'net_assets', 'credit_score', 'dc_pension', 'irp_pension',
+              'investments_json', 'loans_json']
+    row = dict(rows[latest_idx])
+
+    if asset_type == 'investment':
+        items = json.loads(row.get('investments_json') or '[]')
+        if action == 'delete' and 0 <= index < len(items):
+            items.pop(index)
+        elif action == 'update' and 0 <= index < len(items):
+            for k, v in data.items():
+                if v is not None:
+                    items[index][k] = v
+        row['investments_json'] = json.dumps(items, ensure_ascii=False)
+
+    elif asset_type == 'loan':
+        items = json.loads(row.get('loans_json') or '[]')
+        if action == 'delete' and 0 <= index < len(items):
+            items.pop(index)
+        elif action == 'update' and 0 <= index < len(items):
+            for k, v in data.items():
+                if v is not None:
+                    items[index][k] = v
+        row['loans_json'] = json.dumps(items, ensure_ascii=False)
+
+    elif asset_type == 'pension':
+        if data.get('dc_pension') is not None:
+            row['dc_pension'] = str(int(float(data['dc_pension'])))
+        if data.get('irp_pension') is not None:
+            row['irp_pension'] = str(int(float(data['irp_pension'])))
+
+    new_rows = list(rows)
+    new_rows[latest_idx] = row
+    with open(ASSETS_PATH, 'w', encoding='utf-8', newline='') as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        w.writerows(new_rows)
+    return True
+
+
 def _write_overrides(ov_dict):
     """overrides.csv 전체 재작성."""
     with open(OV_PATH, 'w', encoding='utf-8', newline='') as f:
@@ -339,6 +396,12 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == '/api/bulk-override':
                 save_bulk_override(body['ids'], body.get('cat'), body.get('desc'))
                 self._json({'ok': True})
+            elif self.path == '/api/update-asset':
+                ok = update_asset(
+                    body['person'], body['type'], body['action'],
+                    body.get('index', -1), body.get('data', {})
+                )
+                self._json({'ok': ok})
             else:
                 self._json({'error': 'not found'}, 404)
         except KeyError as e:

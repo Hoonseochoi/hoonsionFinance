@@ -422,6 +422,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
   </div>
 </div>
 
+<!-- ASSET EDIT MODAL -->
+<div class="edit-modal" id="assetEditModal">
+  <div class="edit-box" style="width:460px;">
+    <div class="eb-title" id="asset-edit-title">자산 수정</div>
+    <div id="asset-edit-fields"></div>
+    <div class="eb-btns">
+      <button class="btn-danger" onclick="doAssetDeleteFromEdit()">삭제</button>
+      <button class="btn-secondary" onclick="closeAssetEdit()">취소</button>
+      <button class="btn-primary" onclick="submitAssetEdit()">수정 확인</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="confirm-modal" id="confirmModal">
   <div class="confirm-box">
@@ -611,7 +624,9 @@ function renderDashboardTopSection() {
 }
 
 // 고정비/이체성 카테고리 — 인사이트 분석에서 제외
-const FIXED_CATS = new Set(['금융','이체','보험','의료/건강']);
+const FIXED_CATS = new Set(['금융','이체','보험']);
+// 특정 desc 포함 거래 제외 (예: 85690900 = 전세이자 성격 정기출금)
+const EXCLUDE_DESCS = ['85690900'];
 
 function initInsights() {
   const m = _selectedMonth;
@@ -619,9 +634,10 @@ function initInsights() {
   const mData = RAW.monthly[mIdx] || {total_income:0, total_expense:0};
   const prevData = mIdx > 0 ? RAW.monthly[mIdx-1] : null;
 
-  // 해당 월 트랜잭션 (이체 제외)
+  // 해당 월 트랜잭션 (이체·고정비·전세이자 제외)
+  const isExcluded = t => FIXED_CATS.has(t.cat) || EXCLUDE_DESCS.some(d => t.desc.includes(d));
   const mTxs = visibleTx().filter(t => t.month === m && t.type !== '이체');
-  const mExp = mTxs.filter(t => t.type === '지출');
+  const mExp = mTxs.filter(t => t.type === '지출' && !isExcluded(t));
   const mInc = mTxs.filter(t => t.type === '수입');
 
   // 히어로 업데이트
@@ -655,44 +671,93 @@ function initInsights() {
   });
   const topCats = Object.entries(catMap).sort((a,b)=>b[1].total-a[1].total);
 
-  // Alert 카드 생성
+  // ── 인사이트 Alert 카드 생성 ──
   const alerts = [];
+
+  // ① 이달 최대 지출 카테고리
   if (topCats.length >= 1) {
     const [cat1, v1] = topCats[0];
-    alerts.push({color:'red', icon:'💸', title:`${m.slice(5)}월 지출 1위 — ${cat1}`, amt:v1.total,
-      body:`이달 ${cat1} 지출 합계. 클릭해서 상세 확인.`,
+    const pct1 = income > 0 ? Math.round(v1.total / income * 100) : 0;
+    alerts.push({color:'red', icon:'💸', title:`${m.slice(5)}월 최대 지출 — ${cat1}`, amt:v1.total,
+      body:`수입의 ${pct1}% 차지. 훈 ${fmt(v1.h||0)} · 시 ${fmt(v1.w||0)}. 클릭해서 세부 내역 확인.`,
       onclick:`openModal('cat_${encodeURIComponent(cat1)}','${cat1}')`});
   }
-  if (topCats.length >= 2) {
-    const [cat2, v2] = topCats[1];
-    alerts.push({color:'yellow', icon:'📊', title:`지출 2위 — ${cat2}`, amt:v2.total,
-      body:`이달 ${cat2} 지출. 전체 가계 지출의 ${catMap[cat2]?Math.round(catMap[cat2].total/Math.max(expense,1)*100):0}%.`,
-      onclick:`openModal('cat_${encodeURIComponent(cat2)}','${cat2}')`});
-  }
-  // 전월 대비 가장 많이 늘어난 카테고리
-  if (prevData) {
-    const prevMTxs = visibleTx().filter(t => t.month === prevData.month && t.type === '지출' && !FIXED_CATS.has(t.cat));
-    const prevCatMap = {};
-    prevMTxs.forEach(t => {
-      if (!prevCatMap[t.cat]) prevCatMap[t.cat] = 0;
-      prevCatMap[t.cat] += Math.abs(t.amount);
+
+  // ② 과소비 감지: 3개월 평균 대비 1.5배 이상 카테고리
+  const last3months = RAW.monthly.slice(-4, -1).map(x => x.month);
+  if (last3months.length > 0) {
+    const avgMap = {};
+    last3months.forEach(pm => {
+      visibleTx()
+        .filter(t => t.month === pm && t.type === '지출' && !isExcluded(t))
+        .forEach(t => {
+          if (!avgMap[t.cat]) avgMap[t.cat] = {total:0, months:new Set()};
+          avgMap[t.cat].total += Math.abs(t.amount);
+          avgMap[t.cat].months.add(pm);
+        });
     });
+    const overSpend = topCats
+      .map(([cat, v]) => {
+        const avg = avgMap[cat] ? avgMap[cat].total / avgMap[cat].months.size : 0;
+        return {cat, cur: v.total, avg, ratio: avg > 0 ? v.total / avg : 0};
+      })
+      .filter(x => x.ratio >= 1.5 && x.cur > 100000)
+      .sort((a,b) => b.ratio - a.ratio);
+    if (overSpend.length) {
+      const os = overSpend[0];
+      alerts.push({color:'yellow', icon:'⚠️',
+        title:`과소비 감지 — ${os.cat}`,
+        amt: os.cur,
+        body:`최근 3개월 평균(${fmt(Math.round(os.avg))}원) 대비 ${os.ratio.toFixed(1)}배 지출. 클릭해서 확인.`,
+        onclick:`openModal('cat_${encodeURIComponent(os.cat)}','${os.cat}')`});
+    }
+  }
+
+  // ③ 전월 대비 가장 많이 늘어난 카테고리
+  let prevCatMap = {};
+  if (prevData) {
+    visibleTx()
+      .filter(t => t.month === prevData.month && t.type === '지출' && !isExcluded(t))
+      .forEach(t => {
+        if (!prevCatMap[t.cat]) prevCatMap[t.cat] = 0;
+        prevCatMap[t.cat] += Math.abs(t.amount);
+      });
     const diffs = topCats.map(([cat, v]) => ({cat, diff: v.total - (prevCatMap[cat]||0)}))
-      .filter(x => x.diff > 0).sort((a,b)=>b.diff-a.diff);
+      .filter(x => x.diff > 50000).sort((a,b) => b.diff - a.diff);
     if (diffs.length) {
       alerts.push({color:'blue', icon:'📈', title:`전월 대비 증가 — ${diffs[0].cat}`, amt:diffs[0].diff,
-        body:`지난달보다 ${fmt(diffs[0].diff)}원 더 지출했어요.`,
+        body:`지난달(${fmt(prevCatMap[diffs[0].cat]||0)}원)보다 ${fmt(diffs[0].diff)}원 더 지출. 클릭해서 확인.`,
         onclick:`openModal('cat_${encodeURIComponent(diffs[0].cat)}','${diffs[0].cat}')`});
     }
+
+    // ④ 절감 성공
     const bigSave = topCats.map(([cat, v]) => ({cat, diff: (prevCatMap[cat]||0) - v.total}))
-      .filter(x => x.diff > 50000).sort((a,b)=>b.diff-a.diff);
+      .filter(x => x.diff > 50000).sort((a,b) => b.diff - a.diff);
     if (bigSave.length) {
       alerts.push({color:'green', icon:'✂️', title:`절감 성공 — ${bigSave[0].cat}`, amt:bigSave[0].diff,
-        body:`지난달 대비 ${fmt(bigSave[0].diff)}원 절약했어요!`,
+        body:`지난달 대비 ${fmt(bigSave[0].diff)}원 절약. 이 추세를 유지해보세요!`,
         onclick:`openModal('cat_${encodeURIComponent(bigSave[0].cat)}','${bigSave[0].cat}')`});
     }
   }
-  // 최대 4개 alert
+
+  // ⑤ 이달 단건 최대 지출 (있으면 추가)
+  if (mExp.length > 0) {
+    const bigTx = mExp.reduce((a,b) => Math.abs(a.amount) > Math.abs(b.amount) ? a : b);
+    if (Math.abs(bigTx.amount) > 300000 && alerts.length < 4) {
+      alerts.push({color:'yellow', icon:'🧾', title:`이달 최대 단건 지출`, amt:Math.abs(bigTx.amount),
+        body:`"${bigTx.desc}" (${bigTx.cat}). ${bigTx.date.slice(5)} 결제.`,
+        onclick:`openModal('cat_${encodeURIComponent(bigTx.cat)}','${bigTx.cat}')`});
+    }
+  }
+
+  // ⑥ 적자 경고
+  if (net < 0 && alerts.length < 4) {
+    alerts.push({color:'red', icon:'🚨', title:`이달 적자 경고`, amt:Math.abs(net),
+      body:`지출이 수입을 ${fmt(Math.abs(net))}원 초과. 주요 지출 카테고리를 검토하세요.`,
+      onclick:`''`});
+  }
+
+  // 최대 4개, 2열 배치
   const alertPairs = [];
   for (let i = 0; i < Math.min(4, alerts.length); i += 2) {
     alertPairs.push(alerts.slice(i, i+2));
@@ -741,7 +806,7 @@ function initInsights() {
     ? `${prevData.month.slice(5)}월 → ${m.slice(5)}월 변화`
     : '카테고리별 지출';
   if (prevData) {
-    const prevMTxs2 = visibleTx().filter(t => t.month === prevData.month && t.type === '지출' && !FIXED_CATS.has(t.cat));
+    const prevMTxs2 = visibleTx().filter(t => t.month === prevData.month && t.type === '지출' && !isExcluded(t));
     const prevCatMap2 = {};
     prevMTxs2.forEach(t => {
       if (!prevCatMap2[t.cat]) prevCatMap2[t.cat] = 0;
@@ -777,15 +842,35 @@ function initInsights() {
       </div>`).join('');
   }
 
-  // 펀 카드 (신용점수, 데이터 기간)
+  // 펀 카드 (저축 트렌드, 신용점수, 데이터 기간)
   const firstM = RAW.monthly[0]?.month || '';
   const lastM = RAW.monthly[RAW.monthly.length-1]?.month || '';
   const hCredit = RAW.h_assets?.credit_score || 0;
   const wCredit = RAW.w_assets?.credit_score || 0;
+
+  // 최근 3개월 평균 저축률
+  const recent3 = RAW.monthly.slice(-3);
+  const avgSaveRate = recent3.length > 0
+    ? Math.round(recent3.reduce((a, md) => {
+        const inc = md.total_income;
+        const exp = Math.abs(md.total_expense);
+        return a + (inc > 0 ? (inc - exp) / inc * 100 : 0);
+      }, 0) / recent3.length)
+    : 0;
+  const saveTrend = saveRate - avgSaveRate;
+  const saveTrendTxt = saveTrend >= 0
+    ? `<span style="color:#5DE3B0;">▲ 평균보다 ${saveTrend}%p 높음</span>`
+    : `<span style="color:#FF8B72;">▼ 평균보다 ${Math.abs(saveTrend)}%p 낮음</span>`;
+
+  // 연간 총 지출 (고정비 제외)
+  const annualExp = visibleTx()
+    .filter(t => t.type === '지출' && !isExcluded(t))
+    .reduce((a, t) => a + Math.abs(t.amount), 0);
+
   document.getElementById('ins-fun-cards').innerHTML = `
-    <div class="fun-card"><div class="fc-lbl">데이터 기간</div><div class="fc-val">${firstM.slice(2).replace('-','/')} ~ ${lastM.slice(2).replace('-','/')}</div><div class="fc-desc">총 ${RAW.monthly.length}개월 · 거래 ${((RAW.meta?.tx_count?.h||0)+(RAW.meta?.tx_count?.w||0)).toLocaleString()}건</div></div>
-    <div class="fun-card"><div class="fc-lbl">신용점수 🏆</div><div class="fc-val">훈 ${hCredit} · 시 ${wCredit}</div><div class="fc-desc">부부 합산 ${hCredit+wCredit}점. ${wCredit===1000?'시온 만점 달성!':''}</div></div>
-    <div class="fun-card"><div class="fc-lbl">합산 순자산</div><div class="fc-val">${fmt(RAW.combined.net_assets)}원</div><div class="fc-desc">훈 ${fmt(RAW.h_assets?.net_assets||0)} · 시 ${fmt(RAW.w_assets?.net_assets||0)}</div></div>`;
+    <div class="fun-card"><div class="fc-lbl">이달 저축률</div><div class="fc-val">${saveRate}%</div><div class="fc-desc">3개월 평균 ${avgSaveRate}% 대비 ${saveTrendTxt}</div></div>
+    <div class="fun-card"><div class="fc-lbl">신용점수 🏆</div><div class="fc-val">훈 ${hCredit} · 시 ${wCredit}</div><div class="fc-desc">부부 합산 ${hCredit+wCredit}점${wCredit===1000?' · 시온 만점!':''}</div></div>
+    <div class="fun-card"><div class="fc-lbl">데이터 기간</div><div class="fc-val">${firstM.slice(2).replace('-','/')} ~ ${lastM.slice(2).replace('-','/')}</div><div class="fc-desc">총 ${RAW.monthly.length}개월 · ${((RAW.meta?.tx_count?.h||0)+(RAW.meta?.tx_count?.w||0)).toLocaleString()}건 분석</div></div>`;
 }
 
 function initAssetGraphPage() {
@@ -906,19 +991,27 @@ function renderModal(type) {
 
   } else if (type==='investments') {
     const h=RAW.h_assets, w=RAW.w_assets;
-    const all=[...h.investments.map(i=>({...i,person:'h'})),...w.investments.map(i=>({...i,person:'w'}))].sort((a,b)=>b.value-a.value);
+    const hInvIdx = h.investments.map((i,idx)=>({...i,person:'h',_idx:idx}));
+    const wInvIdx = w.investments.map((i,idx)=>({...i,person:'w',_idx:idx}));
+    const all=[...hInvIdx,...wInvIdx].sort((a,b)=>b.value-a.value);
     const tv=all.reduce((a,i)=>a+i.value,0), tc=all.reduce((a,i)=>a+i.cost,0);
     content.innerHTML=all.map(i=>{
       const rt=((i.value-i.cost)/i.cost*100);
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="ptag ${i.person}">${i.person==='h'?'훈':'시'}</span>
-          <div><div style="font-size:12px;font-weight:600;">${i.name}</div><div style="font-size:10px;color:var(--muted);">${i.firm}</div></div>
+      const itemJson = encodeURIComponent(JSON.stringify({name:i.name,firm:i.firm||'',value:i.value,cost:i.cost,rate:i.rate||rt}));
+      return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);">
+        <span class="ptag ${i.person}">${i.person==='h'?'훈':'시'}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;">${i.name}</div>
+          <div style="font-size:10px;color:var(--muted);">${i.firm||''}</div>
         </div>
-        <div style="text-align:right;">
+        <div style="text-align:right;margin-right:8px;">
           <div style="font-size:13px;font-weight:700;">${fmt(i.value)}원</div>
           <div style="font-size:10px;font-weight:600;color:${rt>=0?'var(--teal)':'var(--coral)'};">${pct(rt)} (${rt>=0?'+':''}${fmt(i.value-i.cost)}원)</div>
           <div style="font-size:10px;color:var(--muted);">원금 ${fmt(i.cost)}원</div>
+        </div>
+        <div class="tx-actions">
+          <button class="tx-act-btn edit" onclick="openAssetEdit('${i.person}','investment',${i._idx},decodeURIComponent('${itemJson}'))" title="수정">✏</button>
+          <button class="tx-act-btn del" onclick="doAssetDelete('${i.person}','investment',${i._idx})" title="삭제">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -930,31 +1023,49 @@ function renderModal(type) {
 
   } else if (type==='loans') {
     const loans=RAW.h_assets.loans;
-    content.innerHTML=loans.map(l=>`
-      <div style="padding:13px 0;border-bottom:1px solid var(--border);">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    const maxLoan=Math.max(...loans.map(l=>l.balance),1);
+    content.innerHTML=loans.map((l,idx)=>{
+      const itemJson=encodeURIComponent(JSON.stringify({name:l.name,balance:l.balance,rate:l.rate||0}));
+      return `<div style="padding:13px 0;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <div style="font-size:14px;font-weight:700;">${l.name}</div>
-          <div style="font-size:15px;font-weight:800;color:var(--coral);">-${fmt(l.balance)}원</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="font-size:15px;font-weight:800;color:var(--coral);">-${fmt(l.balance)}원</div>
+            <div class="tx-actions">
+              <button class="tx-act-btn edit" onclick="openAssetEdit('h','loan',${idx},decodeURIComponent('${itemJson}'))" title="수정">✏</button>
+              <button class="tx-act-btn del" onclick="doAssetDelete('h','loan',${idx})" title="삭제">✕</button>
+            </div>
+          </div>
         </div>
         <div style="height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:5px;">
-          <div style="width:${Math.round(l.balance/216000000*100)}%;height:100%;background:var(--coral);border-radius:4px;"></div>
+          <div style="width:${Math.round(l.balance/maxLoan*100)}%;height:100%;background:var(--coral);border-radius:4px;"></div>
         </div>
         <div style="font-size:11px;color:var(--muted);">금리 ${l.rate}% · 잔여 ${fmt(l.balance)}원</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     stats.innerHTML=`<div class="ms-stat"><div class="ms-lbl">총 대출 잔액</div><div class="ms-val" style="color:var(--coral);">${fmt(loans.reduce((a,l)=>a+l.balance,0))}원</div></div>`;
 
   } else if (type==='pension') {
-    const dc=RAW.h_dc||122764978, irp=RAW.h_irp||7050000;
+    const dc=RAW.h_dc||0, irp=RAW.h_irp||0;
     content.innerHTML=`
       <div style="padding:13px 0;border-bottom:1px solid var(--border);">
-        <div style="display:flex;justify-content:space-between;"><div><div style="font-weight:700;">최훈서(DC) 퇴직연금</div><div style="font-size:11px;color:var(--muted);">메리츠화재 · DC형</div></div>
-        <div style="font-size:16px;font-weight:800;color:var(--teal);">${fmt(dc)}원</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-weight:700;">최훈서(DC) 퇴직연금</div><div style="font-size:11px;color:var(--muted);">메리츠화재 · DC형</div></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:16px;font-weight:800;color:var(--teal);">${fmt(dc)}원</div>
+            <button class="tx-act-btn edit" onclick="openAssetEdit('h','pension',-1,{dc_pension:${dc},irp_pension:${irp}})" title="수정">✏</button>
+          </div>
+        </div>
       </div>
       <div style="padding:13px 0;">
-        <div style="display:flex;justify-content:space-between;"><div><div style="font-weight:700;">개인형 IRP</div></div>
-        <div style="font-size:16px;font-weight:800;color:var(--teal);">${fmt(irp)}원</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-weight:700;">개인형 IRP</div></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:16px;font-weight:800;color:var(--teal);">${fmt(irp)}원</div>
+          </div>
+        </div>
       </div>`;
-    stats.innerHTML=`<div class="ms-stat"><div class="ms-lbl">연금 합산</div><div class="ms-val">${fmt(dc+irp)}원</div></div>`;
+    stats.innerHTML=`<div class="ms-stat"><div class="ms-lbl">연금 합산</div><div class="ms-val">${fmt(dc+irp)}원</div></div><div class="ms-stat"><div class="ms-lbl">DC</div><div class="ms-val">${fmt(dc)}원</div></div><div class="ms-stat"><div class="ms-lbl">IRP</div><div class="ms-val">${fmt(irp)}원</div></div>`;
 
   } else if (type==='net_assets') {
     const h=RAW.h_assets, w=RAW.w_assets, C=RAW.combined;
@@ -1247,6 +1358,116 @@ function showConfirm(title, desc, opts) {
 function handleConf(i) {
   document.getElementById('confirmModal').classList.remove('open');
   window._confOpts[i].action();
+}
+
+// ═══════════════════════
+//  ASSET EDIT / DELETE
+// ═══════════════════════
+let _assetEdit = null; // {person, type, index}
+
+function openAssetEdit(person, type, index, itemOrJson) {
+  let item = itemOrJson;
+  if (typeof itemOrJson === 'string') {
+    try { item = JSON.parse(itemOrJson); } catch(e) { item = {}; }
+  }
+  _assetEdit = {person, type, index};
+
+  const titleEl = document.getElementById('asset-edit-title');
+  const fields = document.getElementById('asset-edit-fields');
+
+  if (type === 'investment') {
+    titleEl.textContent = '투자 종목 수정';
+    fields.innerHTML = `
+      <div class="eb-field"><div class="eb-label">종목명</div><input class="eb-input" id="ae-name" value="${item.name||''}"></div>
+      <div class="eb-field"><div class="eb-label">운용사</div><input class="eb-input" id="ae-firm" value="${item.firm||''}"></div>
+      <div class="eb-field"><div class="eb-label">평가금액 (원)</div><input class="eb-input" id="ae-value" type="number" value="${item.value||0}"></div>
+      <div class="eb-field"><div class="eb-label">매입금액 (원)</div><input class="eb-input" id="ae-cost" type="number" value="${item.cost||0}"></div>`;
+  } else if (type === 'loan') {
+    titleEl.textContent = '대출 수정';
+    fields.innerHTML = `
+      <div class="eb-field"><div class="eb-label">대출명</div><input class="eb-input" id="ae-name" value="${item.name||''}"></div>
+      <div class="eb-field"><div class="eb-label">잔액 (원)</div><input class="eb-input" id="ae-balance" type="number" value="${item.balance||0}"></div>
+      <div class="eb-field"><div class="eb-label">금리 (%)</div><input class="eb-input" id="ae-rate" type="number" step="0.01" value="${item.rate||0}"></div>`;
+  } else if (type === 'pension') {
+    titleEl.textContent = '퇴직연금 수정';
+    fields.innerHTML = `
+      <div class="eb-field"><div class="eb-label">DC 퇴직연금 (원)</div><input class="eb-input" id="ae-dc" type="number" value="${item.dc_pension||0}"></div>
+      <div class="eb-field"><div class="eb-label">IRP (원)</div><input class="eb-input" id="ae-irp" type="number" value="${item.irp_pension||0}"></div>`;
+  }
+
+  document.getElementById('assetEditModal').classList.add('open');
+}
+
+function closeAssetEdit() {
+  document.getElementById('assetEditModal').classList.remove('open');
+  _assetEdit = null;
+}
+
+function doAssetDeleteFromEdit() {
+  if (!_assetEdit) return;
+  const {person, type, index} = _assetEdit;
+  closeAssetEdit();
+  doAssetDelete(person, type, index);
+}
+
+async function submitAssetEdit() {
+  if (!_assetEdit) return;
+  const {person, type, index} = _assetEdit;
+  let data = {};
+
+  if (type === 'investment') {
+    const value = parseInt(document.getElementById('ae-value').value) || 0;
+    const cost  = parseInt(document.getElementById('ae-cost').value) || 0;
+    data = {
+      name:  document.getElementById('ae-name').value.trim(),
+      firm:  document.getElementById('ae-firm').value.trim(),
+      value, cost,
+      rate: cost > 0 ? parseFloat(((value - cost) / cost * 100).toFixed(2)) : 0,
+    };
+  } else if (type === 'loan') {
+    data = {
+      name:    document.getElementById('ae-name').value.trim(),
+      balance: parseInt(document.getElementById('ae-balance').value) || 0,
+      rate:    parseFloat(document.getElementById('ae-rate').value) || 0,
+    };
+  } else if (type === 'pension') {
+    data = {
+      dc_pension:  parseInt(document.getElementById('ae-dc').value) || 0,
+      irp_pension: parseInt(document.getElementById('ae-irp').value) || 0,
+    };
+  }
+
+  try {
+    const r = await fetch('/api/update-asset', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({person, type, action: 'update', index, data})
+    });
+    if (!r.ok) { alert('저장 실패: 서버 오류가 발생했습니다.'); return; }
+    closeAssetEdit();
+    window.location.reload();
+  } catch(e) {
+    alert('저장 실패: 네트워크 오류가 발생했습니다.');
+  }
+}
+
+async function doAssetDelete(person, type, index) {
+  showConfirm('삭제 확인', '이 항목을 DB에서 삭제할까요? 되돌릴 수 없습니다.', [
+    { label: '삭제', primary: true, action: async () => {
+      try {
+        const r = await fetch('/api/update-asset', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({person, type, action: 'delete', index})
+        });
+        if (!r.ok) { alert('삭제 실패: 서버 오류'); return; }
+        window.location.reload();
+      } catch(e) {
+        alert('삭제 실패: 네트워크 오류');
+      }
+    }},
+    { label: '취소', action: () => {} }
+  ]);
 }
 
 // Dummy Chart namespace to avoid error (Chart.js is global)
