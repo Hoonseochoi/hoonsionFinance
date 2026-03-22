@@ -231,6 +231,81 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
 /* ── AG ASSET ROW ── */
 .ag-row3{margin-bottom:14px;}
 .ag-row-asset{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;}
+
+/* ══ AI REPORT TAB ══════════════════════════════════════════════════════════ */
+.ai-top-bar{background:var(--navy);border-radius:14px;padding:22px 26px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.ai-top-title{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.4px;}
+.ai-top-sub{color:rgba(255,255,255,.45);font-size:12px;margin-top:3px;}
+.ai-top-stats{display:flex;gap:22px;}
+.ai-ts{text-align:center;}
+.ai-ts-l{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;}
+.ai-ts-v{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.4px;}
+.ai-month-select{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 12px;font-size:12px;font-family:inherit;cursor:pointer;outline:none;}
+.ai-month-select option{background:#18243A;color:#fff;}
+
+.ai-sparkline-wrap{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px 20px;margin-bottom:16px;}
+.ai-spark-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+.ai-sparkline{display:flex;gap:6px;align-items:flex-end;height:80px;}
+.ai-spark-col{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:3px;}
+.ai-spark-col:hover .ai-spark-bar{opacity:.75;}
+.ai-spark-amt{font-size:8px;color:var(--muted);white-space:nowrap;transform:rotate(-30deg);transform-origin:center bottom;}
+.ai-spark-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;}
+.ai-spark-bar{width:80%;border-radius:3px 3px 0 0;min-height:4px;transition:opacity .15s;}
+.ai-spark-label{font-size:9px;color:var(--muted);font-weight:600;}
+.ai-spark-col.active .ai-spark-label{color:var(--navy);font-weight:800;}
+.ai-spark-col.active .ai-spark-bar{box-shadow:0 0 0 2px var(--navy);}
+
+.ai-hero-banner{border-radius:12px;padding:22px 26px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.ai-hero-left{flex:1;}
+.ai-hero-month{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.ai-hero-headline{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;padding-left:12px;margin-bottom:8px;line-height:1.3;}
+.ai-hero-summary{font-size:12px;color:rgba(255,255,255,.6);line-height:1.65;max-width:420px;}
+.ai-hero-right{display:flex;flex-direction:column;gap:14px;flex-shrink:0;}
+.ai-hero-stat{text-align:right;}
+.ai-hs-label{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase;}
+.ai-hs-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.6px;}
+
+.ai-special-badge{border:2px solid;border-radius:10px;padding:10px 16px;font-size:12px;font-weight:700;margin-bottom:14px;letter-spacing:-.2px;}
+
+.ai-split-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.ai-person-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:17px 19px;}
+.ai-person-h{border-top:3px solid #1A46A0;}
+.ai-person-w{border-top:3px solid #C84830;}
+.ai-pc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.ai-pc-name{font-size:13px;font-weight:700;color:var(--navy);}
+.ai-pc-total{font-size:16px;font-weight:800;color:var(--navy);letter-spacing:-.4px;}
+.ai-pc-meta{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ai-pc-pct-bar{height:4px;background:var(--bg);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+
+.ai-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ai-bar.ai-bar-lg{margin-bottom:8px;}
+.ai-bar-label{font-size:11px;color:var(--navy2);min-width:70px;flex-shrink:0;}
+.ai-bar-track{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.ai-bar-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.ai-bar-val{font-size:11px;color:var(--muted);min-width:48px;text-align:right;font-weight:600;}
+.ai-bar-lg .ai-bar-label{min-width:80px;font-size:12px;}
+.ai-bar-lg .ai-bar-track{height:8px;}
+.ai-bar-lg .ai-bar-val{font-size:12px;min-width:56px;}
+
+.ai-section-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;letter-spacing:-.2px;}
+.ai-events-list{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+.ai-event{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.ai-event:last-child{border-bottom:none;}
+.ai-ev-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center;}
+.ai-ev-body{flex:1;}
+.ai-ev-title{font-size:12px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;}
+.ai-ev-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.ai-ev-amt{font-size:13px;font-weight:800;color:var(--coral);letter-spacing:-.3px;white-space:nowrap;}
+
+.ai-yearsum{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px 20px;margin-bottom:16px;}
+
+/* ══ YEAR OVERVIEW ══ */
+.ai-year-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.ai-year-kpi{background:var(--navy);border-radius:12px;padding:14px 17px;}
+.ai-yk-l{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.ai-yk-v{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+.ai-yk-s{font-size:10px;margin-top:4px;}
+
 </style>
 </head>
 <body>
@@ -243,6 +318,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
     <button class="nav-tab active" onclick="switchPage(0)">📊 대시보드</button>
     <button class="nav-tab" onclick="switchPage(1)">💡 인사이트</button>
     <button class="nav-tab" onclick="switchPage(2)">📈 자산 그래프</button>
+    <button class="nav-tab" onclick="switchPage(3)">🤖 AI 소비 리포트</button>
   </div>
   <div class="nav-right">
     <select id="month-select" onchange="onMonthChange()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;cursor:pointer;outline:none;">
@@ -427,7 +503,1958 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
   </div>
 </div><!-- /page-2 -->
 
+
+<!-- ════════ PAGE 3: AI 소비 REPORT ════════ -->
+<div class="page" id="page-3">
+
+  <!-- Top Bar -->
+  <div class="ai-top-bar">
+    <div>
+      <div class="ai-top-title">🤖 AI 소비 리포트</div>
+      <div class="ai-top-sub">최훈서 · 윤시온 — 2025년 3월 ~ 2026년 3월 정밀 분석</div>
+    </div>
+    <div class="ai-top-stats">
+      <div class="ai-ts"><div class="ai-ts-l">연간 합산 지출</div><div class="ai-ts-v">18.1천만</div></div>
+      <div class="ai-ts"><div class="ai-ts-l">훈서 지출 비중</div><div class="ai-ts-v">88%</div></div>
+      <div class="ai-ts"><div class="ai-ts-l">시온 지출 비중</div><div class="ai-ts-v">12%</div></div>
+    </div>
+    <select class="ai-month-select" id="ai-month-sel" onchange="selectAIMonth(this.value)">
+      <option value="2025-03">2025년 03월</option>
+<option value="2025-04">2025년 04월</option>
+<option value="2025-05">2025년 05월</option>
+<option value="2025-06">2025년 06월</option>
+<option value="2025-07">2025년 07월</option>
+<option value="2025-08">2025년 08월</option>
+<option value="2025-09">2025년 09월</option>
+<option value="2025-10">2025년 10월</option>
+<option value="2025-11">2025년 11월</option>
+<option value="2025-12">2025년 12월</option>
+<option value="2026-01">2026년 01월</option>
+<option value="2026-02">2026년 02월</option>
+<option value="2026-03">2026년 03월</option>
+
+    </select>
+  </div>
+
+  <!-- Sparkline -->
+  <div class="ai-sparkline-wrap">
+    <div class="ai-spark-title">📊 월별 합산 지출 추이 — 클릭하면 해당 월 리포트로 이동</div>
+    <div class="ai-sparkline" id="ai-sparkline">
+      
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-03')">
+      <div class="ai-spark-amt">7만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:26%;background:#1A46A0"></div>
+      </div>
+      <div class="ai-spark-label">03월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-04')">
+      <div class="ai-spark-amt">1.8천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:71%;background:#C84830"></div>
+      </div>
+      <div class="ai-spark-label">04월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-05')">
+      <div class="ai-spark-amt">2.1천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:80%;background:#B87020"></div>
+      </div>
+      <div class="ai-spark-label">05월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-06')">
+      <div class="ai-spark-amt">2.6천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:100%;background:#C84830"></div>
+      </div>
+      <div class="ai-spark-label">06월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-07')">
+      <div class="ai-spark-amt">1.1천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:45%;background:#B87020"></div>
+      </div>
+      <div class="ai-spark-label">07월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-08')">
+      <div class="ai-spark-amt">7만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:28%;background:#1A46A0"></div>
+      </div>
+      <div class="ai-spark-label">08월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-09')">
+      <div class="ai-spark-amt">8만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:31%;background:#1A6858"></div>
+      </div>
+      <div class="ai-spark-label">09월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-10')">
+      <div class="ai-spark-amt">1.1천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:44%;background:#B87020"></div>
+      </div>
+      <div class="ai-spark-label">10월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-11')">
+      <div class="ai-spark-amt">2.1천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:83%;background:#C84830"></div>
+      </div>
+      <div class="ai-spark-label">11월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2025-12')">
+      <div class="ai-spark-amt">1.7천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:67%;background:#C84830"></div>
+      </div>
+      <div class="ai-spark-label">12월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2026-01')">
+      <div class="ai-spark-amt">8만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:32%;background:#B87020"></div>
+      </div>
+      <div class="ai-spark-label">01월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2026-02')">
+      <div class="ai-spark-amt">1.2천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:49%;background:#1A6858"></div>
+      </div>
+      <div class="ai-spark-label">02월</div>
+    </div>
+    <div class="ai-spark-col" onclick="selectAIMonth('2026-03')">
+      <div class="ai-spark-amt">1.3천만</div>
+      <div class="ai-spark-bar-wrap">
+        <div class="ai-spark-bar" style="height:52%;background:#C84830"></div>
+      </div>
+      <div class="ai-spark-label">03월</div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Year Overview -->
+  <div class="ai-year-grid">
+    <div class="ai-year-kpi">
+      <div class="ai-yk-l">훈서 연간 지출</div>
+      <div class="ai-yk-v">15.9천만</div>
+      <div class="ai-yk-s" style="color:rgba(255,255,255,.4)">합산 수입 13.0천만 · 월평균 1.2천만</div>
+    </div>
+    <div class="ai-year-kpi">
+      <div class="ai-yk-l">시온 연간 지출</div>
+      <div class="ai-yk-v">2.2천만</div>
+      <div class="ai-yk-s" style="color:rgba(255,255,255,.4)">합산 수입 5.2천만 · 월평균 2만</div>
+    </div>
+  </div>
+
+  <!-- Year Cat Breakdown -->
+  <div class="ai-yearsum" style="margin-bottom:16px;">
+    <div class="ai-spark-title">🗂️ 연간 카테고리 TOP 8 (훈서+시온 합산)</div>
+    
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">온라인쇼핑</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+      <div class="ai-bar-val">3.4천만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">금융</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:63%;background:#1A46A0"></div></div>
+      <div class="ai-bar-val">2.1천만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">패션/쇼핑</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:60%;background:#C84830"></div></div>
+      <div class="ai-bar-val">2.0천만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">여행/숙박</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:58%;background:#1A6858"></div></div>
+      <div class="ai-bar-val">1.9천만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">생활</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:38%;background:#5838A8"></div></div>
+      <div class="ai-bar-val">1.3천만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">자동차</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:29%;background:#8B4513"></div></div>
+      <div class="ai-bar-val">10만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">의료/건강</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:28%;background:#B87020"></div></div>
+      <div class="ai-bar-val">9만</div>
+    </div>
+    <div class="ai-bar ai-bar-lg">
+      <div class="ai-bar-label">식비</div>
+      <div class="ai-bar-track"><div class="ai-bar-fill" style="width:28%;background:#2E8B57"></div></div>
+      <div class="ai-bar-val">9만</div>
+    </div>
+  </div>
+
+  <!-- Per-month cards (shown one at a time) -->
+  
+  <div class="ai-month-card" id="aicard-2025-03" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 03월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #1A46A0">💡 3월 데이터 반월分 — 패턴 파악 시작</div>
+        <div class="ai-hero-summary">데이터 시작월. 절반만 있어 지출 규모 작음. 훈서 금융(보험료·구독) 비중 높음.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">7만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">113건</div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">5,972,392원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>67건</span>
+          <span class="rn">6만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:90%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">문화/여가</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:42%;background:#6A0DAD"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:19%;background:#C84830"></div></div>
+        <div class="ai-bar-val">55만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">주거/통신</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:14%;background:#4682B4"></div></div>
+        <div class="ai-bar-val">39만1천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:12%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">34만4천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">683,086원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>46건</span>
+          <span class="rp">+3만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:10%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">22만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:50%;background:#B87020"></div></div>
+        <div class="ai-bar-val">11만5천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">주거/통신</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:45%;background:#4682B4"></div></div>
+        <div class="ai-bar-val">10만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:43%;background:#C84830"></div></div>
+        <div class="ai-bar-val">9만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">교통</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:37%;background:#708090"></div></div>
+        <div class="ai-bar-val">8만4천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">💳</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 메리츠 복지카드</div>
+          <div class="ai-ev-desc">서오능 가스(주) 공과금 150,000원</div>
+        </div>
+        <div class="ai-ev-amt">150,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🚗</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 교통비 정기 지출</div>
+          <div class="ai-ev-desc">교통비 정기 지출</div>
+        </div>
+        <div class="ai-ev-amt">91,200원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-04" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 04월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #C84830">🚘 이달의 빅이벤트: Tesla 정비 500만원</div>
+        <div class="ai-hero-summary">Tesla 정비 500만원이 월 지출의 31%를 차지. 훈서 자동차 지출 폭발적.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.8천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">344건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#C84830;color:#C84830">⭐ Tesla 정비비 5,000,000원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">15,881,183원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>209건</span>
+          <span class="rn">7만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:87%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">자동차</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#8B4513"></div></div>
+        <div class="ai-bar-val">6만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:40%;background:#C84830"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:36%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:27%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">카페/간식</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:19%;background:#8B6914"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">2,279,550원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>135건</span>
+          <span class="rp">+1만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:13%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">70만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:64%;background:#C84830"></div></div>
+        <div class="ai-bar-val">45만1천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:38%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">26만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">카페/간식</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:23%;background:#8B6914"></div></div>
+        <div class="ai-bar-val">16만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">문화/여가</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:22%;background:#6A0DAD"></div></div>
+        <div class="ai-bar-val">15만2천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🚘</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> Tesla 정기 정비</div>
+          <div class="ai-ev-desc">Tesla Korea — 정비 비용</div>
+        </div>
+        <div class="ai-ev-amt">5,000,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">⛽</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 주유 4회 (라인에너지·중흥에너지·엘림)</div>
+          <div class="ai-ev-desc">주유 4회 (라인에너지·중흥에너지·엘림)</div>
+        </div>
+        <div class="ai-ev-amt">360,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🛍️</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 더블유컨셉 패션 구매</div>
+          <div class="ai-ev-desc">더블유컨셉 패션 구매</div>
+        </div>
+        <div class="ai-ev-amt">169,240원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-05" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 05월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #B87020">✈️ 미국 여행 준비 — ESTA 발급 & 숙박 예약</div>
+        <div class="ai-hero-summary">미국 여행 준비 본격화! ESTA 2명 발급 + 아고다 숙박 3건 예약. 여행/숙박 293만원.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">2.1천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">370건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#B87020;color:#B87020">⭐ 미국 여행 예약 총 1,315,785원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">17,321,767원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>251건</span>
+          <span class="rn">1.4천만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:84%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">여행/숙박</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A6858"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:85%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:76%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:69%;background:#C84830"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:56%;background:#C84830"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">3,198,856원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>119건</span>
+          <span class="rp">+31만6천 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:16%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:60%;background:#C84830"></div></div>
+        <div class="ai-bar-val">62만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:42%;background:#C84830"></div></div>
+        <div class="ai-bar-val">44만1천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:24%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">24만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:19%;background:#B87020"></div></div>
+        <div class="ai-bar-val">19만6천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">✈️</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag" style="background:#F0F0F0;color:#666">둘</span> 미국 여행 ESTA 발급</div>
+          <div class="ai-ev-desc">E-TOURIST ESTA / ELECTRONIC APPLY ESTA</div>
+        </div>
+        <div class="ai-ev-amt">277,036원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏨</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 아고다 숙박 예약 3건 (미국 여행 준비)</div>
+          <div class="ai-ev-desc">아고다 숙박 예약 3건 (미국 여행 준비)</div>
+        </div>
+        <div class="ai-ev-amt">1,038,749원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">👗</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 패션 대규모 구매</div>
+          <div class="ai-ev-desc">패션 대규모 구매</div>
+        </div>
+        <div class="ai-ev-amt">1,635,500원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-06" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 06월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #C84830">🗽 뉴욕 여행 폭발 — 여행/숙박 960만원</div>
+        <div class="ai-hero-summary">6월은 미국 뉴욕 여행월! 훈서 여행/숙박만 960만원. 역대 최고 지출월 중 하나.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">2.6천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">365건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#C84830;color:#C84830">⭐ 뉴욕 여행 합계 약 9,600,000원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">23,625,016원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>282건</span>
+          <span class="rn">6만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:93%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">여행/숙박</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A6858"></div></div>
+        <div class="ai-bar-val">10만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:28%;background:#C84830"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">자동차</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:26%;background:#8B4513"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:21%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:13%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,904,890원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>83건</span>
+          <span class="rp">+3만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:7%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">뷰티/미용</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#E91E8C"></div></div>
+        <div class="ai-bar-val">48만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:50%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">24만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:49%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">23만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:46%;background:#C84830"></div></div>
+        <div class="ai-bar-val">22만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:45%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">22만0천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🗽</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 미국 여행 (뉴욕)</div>
+          <div class="ai-ev-desc">하나투어 965,789 + With.Earth 803,500 + 783,500 + 뉴욕 호텔 2박</div>
+        </div>
+        <div class="ai-ev-amt">3,356,589원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🍖</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 얌얌불닭발 회식/모임 311,000원</div>
+          <div class="ai-ev-desc">얌얌불닭발 회식/모임 311,000원</div>
+        </div>
+        <div class="ai-ev-amt">311,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🚗</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> UBER 해외 이용 48,423원</div>
+          <div class="ai-ev-desc">UBER 해외 이용 48,423원</div>
+        </div>
+        <div class="ai-ev-amt">48,423원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-07" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 07월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #B87020">📱 삼성 전자기기 255만원 & 골프 본격화</div>
+        <div class="ai-hero-summary">삼성전자 온라인스토어 255만원 빅구매. ChatGPT 구독 시작. 문화/여가 116만원은 골프 추정.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.1천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">352건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#B87020;color:#B87020">⭐ 삼성전자 2,546,450원 (전자기기)</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">10,152,932원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>266건</span>
+          <span class="rn">6만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:89%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">4만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">문화/여가</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:32%;background:#6A0DAD"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:31%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:22%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">80만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:21%;background:#C84830"></div></div>
+        <div class="ai-bar-val">78만2천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,260,512원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>86건</span>
+          <span class="rp">+3만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:11%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">54만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:52%;background:#C84830"></div></div>
+        <div class="ai-bar-val">28만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:30%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">16만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">교통</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:17%;background:#708090"></div></div>
+        <div class="ai-bar-val">9만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">카페/간식</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:13%;background:#8B6914"></div></div>
+        <div class="ai-bar-val">6만9천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">📱</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 삼성전자 스마트스토어</div>
+          <div class="ai-ev-desc">Samsung 전자기기 구매 (갤럭시?)</div>
+        </div>
+        <div class="ai-ev-amt">2,546,450원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🎮</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 문화/여가 116만원 (골프·오락)</div>
+          <div class="ai-ev-desc">문화/여가 116만원 (골프·오락)</div>
+        </div>
+        <div class="ai-ev-amt">1,164,900원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">💻</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> ChatGPT 구독 $1.47 (첫 등장)</div>
+          <div class="ai-ev-desc">ChatGPT 구독 $1.47 (첫 등장)</div>
+        </div>
+        <div class="ai-ev-amt">1,947원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-08" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 08월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #1A46A0">📊 업비트 200만원 코인 투자 시작</div>
+        <div class="ai-hero-summary">8월은 상대적으로 안정된 달. 업비트 200만원 첫 대규모 입금 포착. 의료비 73만원.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">7만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">305건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#1A46A0;color:#1A46A0">⭐ 업비트 입금 2,000,000원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">6,771,474원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>239건</span>
+          <span class="rn">3만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:93%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:31%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">77만2천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:31%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">76만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:30%;background:#B87020"></div></div>
+        <div class="ai-bar-val">73만5천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:29%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">72만3천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">491,010원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>66건</span>
+          <span class="rp">+3만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:7%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">13만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:58%;background:#B87020"></div></div>
+        <div class="ai-bar-val">7만5천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:49%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">6만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:30%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">3만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">교통</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:51%;background:#708090"></div></div>
+        <div class="ai-bar-val">6만6천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">📈</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 업비트 입금 (코인)</div>
+          <div class="ai-ev-desc">업비트 가상화폐 투자 입금</div>
+        </div>
+        <div class="ai-ev-amt">2,000,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏥</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 의료/건강 735,297원 (정기 치료)</div>
+          <div class="ai-ev-desc">의료/건강 735,297원 (정기 치료)</div>
+        </div>
+        <div class="ai-ev-amt">735,297원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-09" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 09월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #1A6858">🏥 의료비 정기 지출 & 안정적 소비월</div>
+        <div class="ai-hero-summary">9월은 비교적 소비 안정. 훈서 의료비 80만원 지속. 시온 온라인 쇼핑 활발.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">8만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">342건</div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">6,395,695원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>239건</span>
+          <span class="rn">2만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:80%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:36%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">80만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:36%;background:#B87020"></div></div>
+        <div class="ai-bar-val">79만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:36%;background:#C84830"></div></div>
+        <div class="ai-bar-val">79만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:16%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">36만6천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,576,379원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>103건</span>
+          <span class="rp">+2만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:20%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">39만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:85%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">33만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:72%;background:#C84830"></div></div>
+        <div class="ai-bar-val">28만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:50%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">19만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">뷰티/미용</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:25%;background:#E91E8C"></div></div>
+        <div class="ai-bar-val">10만0천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏥</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 의료비 797,306원</div>
+          <div class="ai-ev-desc">병원 정기 치료 (훈서)</div>
+        </div>
+        <div class="ai-ev-amt">797,306원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🛒</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 더블유컨셉 2회 구매</div>
+          <div class="ai-ev-desc">시온 더블유컨셉 2회 구매</div>
+        </div>
+        <div class="ai-ev-amt">13,200원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-10" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 10월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #B87020">📺 삼성 가전 구매 + 생활비 급증</div>
+        <div class="ai-hero-summary">삼성 가전 구입 (TV 추정) 97만원. 생활비 258만원으로 이달 2위. 시온 뷰티 지출 증가.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.1천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">333건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#B87020;color:#B87020">⭐ 삼성하나로 973,480원 (가전)</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">9,578,153원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>216건</span>
+          <span class="rn">3만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:85%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:97%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">3만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:48%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:32%;background:#B87020"></div></div>
+        <div class="ai-bar-val">84만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:24%;background:#C84830"></div></div>
+        <div class="ai-bar-val">65만2천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,730,294원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>117건</span>
+          <span class="rp">+2만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:15%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">37만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">뷰티/미용</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:63%;background:#E91E8C"></div></div>
+        <div class="ai-bar-val">23만1천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:44%;background:#C84830"></div></div>
+        <div class="ai-bar-val">16만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:43%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">15만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:39%;background:#B87020"></div></div>
+        <div class="ai-bar-val">14만3천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">📺</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 삼성 TV/가전 구매</div>
+          <div class="ai-ev-desc">삼성하나로(삼성공식파트너) 973,480 × 2건</div>
+        </div>
+        <div class="ai-ev-amt">1,059,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">💻</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 네이버페이 쇼핑 973,480원 (복지카드 환급)</div>
+          <div class="ai-ev-desc">네이버페이 쇼핑 973,480원 (복지카드 환급)</div>
+        </div>
+        <div class="ai-ev-amt">973,480원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-11" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 11월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #C84830">🔥 역대 최고 지출월! 업비트 500만 + 골프 182만</div>
+        <div class="ai-hero-summary">역대급 온라인쇼핑 1,175만! 대부분 업비트 코인 투자. 골프 182만원 역대 최고.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">2.1천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">374건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#C84830;color:#C84830">⭐ 업비트 5,000,000원 + 골프 추정 1,828,000원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">19,448,158원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>262건</span>
+          <span class="rn">1.5천만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:92%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">1.2천만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">문화/여가</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:16%;background:#6A0DAD"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:10%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">자동차</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:8%;background:#8B4513"></div></div>
+        <div class="ai-bar-val">88만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:7%;background:#B87020"></div></div>
+        <div class="ai-bar-val">85만7천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,758,740원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>112건</span>
+          <span class="rp">+2만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:8%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">83만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:25%;background:#C84830"></div></div>
+        <div class="ai-bar-val">20만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:18%;background:#B87020"></div></div>
+        <div class="ai-bar-val">14만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:16%;background:#C84830"></div></div>
+        <div class="ai-bar-val">12만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:14%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">11만4천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">📈</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 업비트 500만원 코인 대규모 투자</div>
+          <div class="ai-ev-desc">업비트 가상화폐 5,000,000원 입금</div>
+        </div>
+        <div class="ai-ev-amt">5,000,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🎮</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 문화/여가 182만원 (골프 시즌 피크)</div>
+          <div class="ai-ev-desc">문화/여가 182만원 (골프 시즌 피크)</div>
+        </div>
+        <div class="ai-ev-amt">1,828,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🛍️</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 29CM 2회 쇼핑 80,700+73,700</div>
+          <div class="ai-ev-desc">시온 29CM 2회 쇼핑 80,700+73,700</div>
+        </div>
+        <div class="ai-ev-amt">154,400원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2025-12" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2025년 12월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #C84830">🎄 연말 소비 폭발 — 여행+명품+패션</div>
+        <div class="ai-hero-summary">연말 소비 폭발! 훈서 여행450만+패션376만. 크림 77만(한정판). 시온도 패션 51만.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.7천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">376건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#C84830;color:#C84830">⭐ 크림(KREAM) 767,700원 + 아고다 1,099,322원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">15,427,814원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>269건</span>
+          <span class="rn">7만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:90%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">여행/숙박</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A6858"></div></div>
+        <div class="ai-bar-val">5만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:84%;background:#C84830"></div></div>
+        <div class="ai-bar-val">4만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:39%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:35%;background:#B87020"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:22%;background:#C84830"></div></div>
+        <div class="ai-bar-val">97만3천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,683,296원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>107건</span>
+          <span class="rp">+3만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:10%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">51만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:73%;background:#C84830"></div></div>
+        <div class="ai-bar-val">37만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:45%;background:#C84830"></div></div>
+        <div class="ai-bar-val">22만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:25%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">12만6천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:23%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">12만0천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏨</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 아고다 숙박 (연말 여행)</div>
+          <div class="ai-ev-desc">아고다_나이스 1,099,322원 예약</div>
+        </div>
+        <div class="ai-ev-amt">1,099,322원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">👟</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 크림(KREAM) 명품/한정판</div>
+          <div class="ai-ev-desc">크림 주식회사 — 한정판 스니커즈 추정</div>
+        </div>
+        <div class="ai-ev-amt">767,700원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🍽️</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 감성화로 외식 100,000원</div>
+          <div class="ai-ev-desc">감성화로 외식 100,000원</div>
+        </div>
+        <div class="ai-ev-amt">100,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">👗</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 패션 대거 구매 (연말)</div>
+          <div class="ai-ev-desc">시온 패션 대거 구매 (연말)</div>
+        </div>
+        <div class="ai-ev-amt">513,666원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2026-01" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2026년 01월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #B87020">🏥 새해 의료비 급증 — 부부 합산 236만원</div>
+        <div class="ai-hero-summary">1월은 부부 모두 의료비가 1위. 합산 의료비 236만원. 시온도 지출 증가 추세.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">8만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">311건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#B87020;color:#B87020">⭐ 부부 의료비 합 2,361,697원</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">5,836,888원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>202건</span>
+          <span class="rp">+91만2천 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:71%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#B87020"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:74%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:42%;background:#C84830"></div></div>
+        <div class="ai-bar-val">65만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:41%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">62만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:35%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">53만5천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">2,374,820원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>109건</span>
+          <span class="rp">+5만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:29%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#B87020"></div></div>
+        <div class="ai-bar-val">81만7천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:69%;background:#C84830"></div></div>
+        <div class="ai-bar-val">56만5천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">뷰티/미용</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:30%;background:#E91E8C"></div></div>
+        <div class="ai-bar-val">24만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:22%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">18만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:13%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">10만4천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏥</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 훈서 의료비 154만원</div>
+          <div class="ai-ev-desc">병원 집중 치료</div>
+        </div>
+        <div class="ai-ev-amt">1,544,037원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏥</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 의료비 82만원</div>
+          <div class="ai-ev-desc">시온 병원 치료 (부부 동시 의료비 급증)</div>
+        </div>
+        <div class="ai-ev-amt">817,660원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">👗</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 패션 하우투러브미 2회+wconcept</div>
+          <div class="ai-ev-desc">시온 패션 하우투러브미 2회+wconcept</div>
+        </div>
+        <div class="ai-ev-amt">111,080원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2026-02" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2026년 02월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #1A6858">💰 훈서 성과급 5,507만원 — 연간 최대 흑자월</div>
+        <div class="ai-hero-summary">훈서 성과급 5,507만원 수령! 흑자폭 압도적. 숙박 예약 226만 (봄 여행 준비).</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.2천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">284건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#1A6858;color:#1A6858">⭐ 훈서 성과급 55,075,511원 수령</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">10,253,195원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>217건</span>
+          <span class="rp">+4.5천만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:83%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">여행/숙박</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#1A6858"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">금융</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:74%;background:#1A46A0"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:74%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">2만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:56%;background:#C84830"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:37%;background:#B87020"></div></div>
+        <div class="ai-bar-val">87만0천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">2,137,130원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>67건</span>
+          <span class="rp">+4만 흑자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:17%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#B87020"></div></div>
+        <div class="ai-bar-val">61만8천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:79%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">49만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:55%;background:#C84830"></div></div>
+        <div class="ai-bar-val">34만2천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">뷰티/미용</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:28%;background:#E91E8C"></div></div>
+        <div class="ai-bar-val">17만4천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:27%;background:#C84830"></div></div>
+        <div class="ai-bar-val">16만7천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">🎉</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 훈서 성과급 5,507만원 수령</div>
+          <div class="ai-ev-desc">메리츠화재 연간 성과급 입금 (2월)</div>
+        </div>
+        <div class="ai-ev-amt">55,075,511원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🏨</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 아고다_나이스 숙박 예약 226만원</div>
+          <div class="ai-ev-desc">아고다_나이스 숙박 예약 226만원</div>
+        </div>
+        <div class="ai-ev-amt">2,262,844원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">💊</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag w">시</span> 시온 의료비 62만원 지속</div>
+          <div class="ai-ev-desc">시온 의료비 62만원 지속</div>
+        </div>
+        <div class="ai-ev-amt">618,680원</div>
+      </div></div>
+
+  </div>
+  <div class="ai-month-card" id="aicard-2026-03" style="display:none">
+
+    <!-- Hero Banner -->
+    <div class="ai-hero-banner" style="background:linear-gradient(135deg, var(--navy) 0%, #2A3B60 100%)">
+      <div class="ai-hero-left">
+        <div class="ai-hero-month">2026년 03월 소비 리포트</div>
+        <div class="ai-hero-headline" style="border-left:4px solid #C84830">👓 역대 최대 단일지출: 안경 6,880,000원!</div>
+        <div class="ai-hero-summary">단일 구매 역대 1위! 삼성안경화점 안경 688만원. 이달 패션 지출의 98% 차지.</div>
+      </div>
+      <div class="ai-hero-right">
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">합산 지출</div>
+          <div class="ai-hs-val">1.3천만</div>
+        </div>
+        <div class="ai-hero-stat">
+          <div class="ai-hs-label">거래 건수</div>
+          <div class="ai-hs-val">211건</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-special-badge" style="border-color:#C84830;color:#C84830">⭐ 삼성안경화점 안경 6,880,000원 (역대 최대 단건!)</div>
+
+    <!-- Person Split -->
+    <div class="ai-split-row">
+      <!-- 훈서 -->
+      <div class="ai-person-card ai-person-h">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👨 최훈서</div>
+          <div class="ai-pc-total">12,350,199원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>141건</span>
+          <span class="rn">5만 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:92%;background:#1A46A0;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#C84830"></div></div>
+        <div class="ai-bar-val">7만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">문화/여가</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:15%;background:#6A0DAD"></div></div>
+        <div class="ai-bar-val">1만</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:13%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">92만5천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:11%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">78만2천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:10%;background:#C84830"></div></div>
+        <div class="ai-bar-val">70만9천</div>
+      </div></div>
+      </div>
+      <!-- 시온 -->
+      <div class="ai-person-card ai-person-w">
+        <div class="ai-pc-header">
+          <div class="ai-pc-name">👩 윤시온</div>
+          <div class="ai-pc-total">1,018,260원</div>
+        </div>
+        <div class="ai-pc-meta">
+          <span>70건</span>
+          <span class="rn">99만8천 적자</span>
+        </div>
+        <div class="ai-pc-pct-bar">
+          <div style="width:8%;background:#C84830;height:4px;border-radius:2px"></div>
+        </div>
+        <div class="ai-pc-cats">
+      <div class="ai-bar">
+        <div class="ai-bar-label">생활</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:#5838A8"></div></div>
+        <div class="ai-bar-val">24만2천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">온라인쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:87%;background:#C84830"></div></div>
+        <div class="ai-bar-val">21만0천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">식비</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:59%;background:#2E8B57"></div></div>
+        <div class="ai-bar-val">14만3천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">패션/쇼핑</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:41%;background:#C84830"></div></div>
+        <div class="ai-bar-val">9만9천</div>
+      </div>
+      <div class="ai-bar">
+        <div class="ai-bar-label">의료/건강</div>
+        <div class="ai-bar-track"><div class="ai-bar-fill" style="width:37%;background:#B87020"></div></div>
+        <div class="ai-bar-val">8만8천</div>
+      </div></div>
+      </div>
+    </div>
+
+    <!-- Special Events -->
+    <div class="ai-section-title">🎯 이달의 주목 지출</div>
+    <div class="ai-events-list">
+      <div class="ai-event">
+        <span class="ai-ev-icon">👓</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 명품 안경 구입</div>
+          <div class="ai-ev-desc">삼성안경화점 — 안경 688만원 (역대 최대 단일 구매)</div>
+        </div>
+        <div class="ai-ev-amt">6,880,000원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">⛳</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 문화/여가 106만원 (골프 지속)</div>
+          <div class="ai-ev-desc">문화/여가 106만원 (골프 지속)</div>
+        </div>
+        <div class="ai-ev-amt">1,062,500원</div>
+      </div>
+      <div class="ai-event">
+        <span class="ai-ev-icon">🍴</span>
+        <div class="ai-ev-body">
+          <div class="ai-ev-title"><span class="ptag h">훈</span> 식비 급증 92만원 (외식 증가)</div>
+          <div class="ai-ev-desc">식비 급증 92만원 (외식 증가)</div>
+        </div>
+        <div class="ai-ev-amt">925,400원</div>
+      </div></div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-box">
+    <div class="conf-title" id="conf-title">어떻게 적용할까요?</div>
+    <div class="conf-desc" id="conf-desc"></div>
+    <div class="conf-btns" id="conf-btns"></div>
+  </div>
+</div>
 </div><!-- /pages -->
+
 </div><!-- /app -->
 
 <!-- DETAIL MODAL -->
@@ -482,15 +2509,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--navy
       <button class="btn-secondary" onclick="closeAssetEdit()">취소</button>
       <button class="btn-primary" onclick="submitAssetEdit()">수정 확인</button>
     </div>
-  </div>
-</div>
-
-<!-- CONFIRM MODAL -->
-<div class="confirm-modal" id="confirmModal">
-  <div class="confirm-box">
-    <div class="conf-title" id="conf-title">어떻게 적용할까요?</div>
-    <div class="conf-desc" id="conf-desc"></div>
-    <div class="conf-btns" id="conf-btns"></div>
   </div>
 </div>
 
@@ -1713,6 +3731,22 @@ async function doAssetDelete(person, type, index) {
 
 // Dummy Chart namespace to avoid error (Chart.js is global)
 if (typeof Chart === 'undefined') { window.Charts = {}; } else { window.Charts = {}; }
+
+// ── AI REPORT TAB ────────────────────────────────────────────────────────────
+function selectAIMonth(ym) {
+  document.querySelectorAll('.ai-month-card').forEach(c => c.style.display = 'none');
+  const card = document.getElementById('aicard-' + ym);
+  if (card) card.style.display = 'block';
+  document.getElementById('ai-month-sel').value = ym;
+  document.querySelectorAll('.ai-spark-col').forEach(col => {
+    col.classList.toggle('active', col.getAttribute('onclick').includes(ym));
+  });
+}
+// Initialize AI report on first load
+(function initAIReport() {
+  const latestMonth = '2026-03';
+  selectAIMonth(latestMonth);
+})();
 </script>
 </body>
 </html>
