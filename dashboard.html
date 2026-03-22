@@ -580,7 +580,7 @@ async function loadData() {
   _selectedMonth = months[months.length - 1];
   const sel = document.getElementById('month-select');
   sel.innerHTML = months.slice().reverse().map(m =>
-    `<option value="${m}" ${m===_selectedMonth?'selected':''}>${m.replace('20','').replace('-','/')}월</option>`
+    `<option value="${m}" ${m===_selectedMonth?'selected':''} style="color:#111;background:#fff;">${m.replace('20','').replace('-','/')}월</option>`
   ).join('');
   initDashboard();
   initInsights();
